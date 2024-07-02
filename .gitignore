@@ -1,5 +1,21 @@
-migrations/*
+# 마이그레이션
+migrations/
 alembic.ini
-.idea
+test.db
 
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache
+
+# PyCharm
+.idea
+*.iml
+*.ipr
+
+# Environment
 .backend.env
+
+# macOS
+.DS_Store
