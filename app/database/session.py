@@ -7,8 +7,8 @@ SQLALCHEMY_DATABASE_URL = 'sqlite:///./test.db'
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False,
-                  "connect_timeout": 10},
+    connect_args={"check_same_thread": False
+                  },
     pool_size=20,          # 기본 풀 크기
     max_overflow=40,       # 최대 오버플로우 수
     pool_timeout=30,       # 풀에서 커넥션을 가져오기 위해 대기하는 최대 시간(초)
