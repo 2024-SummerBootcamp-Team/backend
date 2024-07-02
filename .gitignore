@@ -3,6 +3,7 @@
 # 마이그레이션
 migrations/
 alembic.ini
+test.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
