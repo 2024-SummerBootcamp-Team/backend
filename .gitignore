@@ -3,7 +3,6 @@
 # 마이그레이션
 migrations/
 alembic.ini
-test.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -18,6 +17,7 @@ __pycache__/
 
 # 가상환경 무시
 .venv
+venv
 
 # Environment
 .backend.env
