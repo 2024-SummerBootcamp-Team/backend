@@ -16,6 +16,9 @@ __pycache__/
 *.iml
 *.ipr
 
+# 가상환경 무시
+.venv
+
 # Environment
 .backend.env
 
