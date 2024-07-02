@@ -1,0 +1,5 @@
+migrations/*
+alembic.ini
+.idea
+
+.backend.env
