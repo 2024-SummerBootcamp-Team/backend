@@ -1,3 +1,5 @@
+# 서비스 폴더 보통 비즈니스 로직을 처리하는 파일이다.
+# 비즈니스 로직이란, 사용자가 요청한 데이터를 처리하는 로직을 말한다.
 from sqlalchemy.orm import Session
 from ..models.user import User as UserModel
 from ..schemas.users import User as UserSchema
