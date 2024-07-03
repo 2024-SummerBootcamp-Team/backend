@@ -1,12 +1,25 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from ..config.config import get_settings
+import os
+
+DATABASE_URL = get_settings().MYSQL_URL
+DATABASE_USERNAME = get_settings().MYSQL_USERNAME
+DATABASE_PASSWORD = get_settings().MYSQL_PASSWORD
+DATABASE_PORT = get_settings().MYSQL_PORT
+DATABASE_DBNAME = get_settings().MYSQL_DBNAME
 
 
-SQLALCHEMY_DATABASE_URL = 'sqlite:///./test.db'
+
+# SQLALCHEMY_DATABASE_URL = f'mysql+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_URL}:{DATABASE_PORT}/{DATABASE_DBNAME}'
+SQLALCHEMY_DATABASE_URL = 'sqlite:///.test.db'
+
+print(SQLALCHEMY_DATABASE_URL)
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
+
     connect_args={"check_same_thread": False
                   },
     pool_size=20,          # 기본 풀 크기
