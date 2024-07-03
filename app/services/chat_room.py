@@ -1,7 +1,8 @@
 
 from sqlalchemy.orm import Session
 from ..models.chat import ChatRoom as ChatRoomModel
-from ..schemas.chat_rooms import ChatRoom as ChatRoomSchema
+from ..models.chat import ChatRoom as ChatModel
+
 
 def get_chat_rooms(db: Session, skip: int = 0, limit: int = 100):
     return db.query(ChatRoomModel).offset(skip).limit(limit).all()
@@ -11,5 +12,6 @@ def get_chat_rooms(db: Session, skip: int = 0, limit: int = 100):
 #return: 지정된 범위의 채팅방 데이터를 리스트로 반환합니다
 def get_chat_room(db: Session, room_id: int):
     return db.query(ChatRoomModel).filter(ChatRoomModel.id == room_id).first()
-
+def get_chat(db: Session, bubble_id: int):
+    return db.query(ChatRoomModel).filter(ChatModel.id == bubble_id).first()
 

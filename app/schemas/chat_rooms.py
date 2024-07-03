@@ -10,6 +10,7 @@ class ChatRoomBase(BaseModel):
     created_at: datetime
     tts_count: int
     image_count: int
+    bubble_id: int
 
 class ChatRoom(ChatRoomBase):
     id: int

@@ -32,5 +32,11 @@ def read_chat_room(roomId: int, db: Session = Depends(get_db)):
         }]
 
     }  # 단일 채팅방이므로 리스트에 담아서 반환
-
     return response
+
+@router.get("/bubble/{bubble_id}", response_model=schemas.ChatRoomBase)
+def read_chat_bubble(bubble_id: int, db: Session = Depends(get_db)):
+    db_chat_bubble = crud.get_chat(db, bubble_id=bubble_id)
+    if db_chat_bubble is None:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    return db_chat_bubble
