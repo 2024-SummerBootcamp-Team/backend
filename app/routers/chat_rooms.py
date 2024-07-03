@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/room/{roomId}", response_model=schemas.ChatRoomResponse)
+@router.get("/room/{roomId}", response_model=schemas.ChatRoomBase)
 def read_chat_room(roomId: int, db: Session = Depends(get_db)):
     chat_room = crud.get_chat_room(db, room_id=roomId)
     if chat_room is None:

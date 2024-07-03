@@ -4,20 +4,16 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class ChatRoomBase(BaseModel):
-    writer: str
+    id: int
     category: str
     content: str
-    createdAt: datetime
-    tts: int
-    image: int
+    created_at: datetime
+    tts_count: int
+    image_count: int
 
 class ChatRoom(ChatRoomBase):
     id: int
-
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-class ChatRoomResponse(BaseModel):
-    code: int
-    message: str
-    data: list[ChatRoom]
+
