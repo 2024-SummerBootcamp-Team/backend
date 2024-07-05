@@ -1,42 +1,21 @@
-# routers/chat_rooms.py
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..services import chat_room as crud
+from ..services import chat_room as crud #services 모듈에서 chat_room을 가져오고, 이를 crud로 이름을 변경하여 사용합니다. 이 모듈은 데이터베이스 작업(CRUD 작업)을 수행하는 함수들을 포함하고 있습니다
 from ..database.session import get_db
 from ..schemas import chat_rooms as schemas
-
 router = APIRouter(
-    prefix="/chat",
+    prefix="/chats",
     tags=["chat_rooms"],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.get("/room/{roomId}", response_model=schemas.ChatRoomBase)
+@router.get("/{roomId}", response_model=schemas.ChatRoomList)
 def read_chat_room(roomId: int, db: Session = Depends(get_db)):
-    chat_room = crud.get_chat_room(db, room_id=roomId)
-    if chat_room is None:
-        raise HTTPException(status_code=404, detail="Chat room not found")
-    response = {
-        "code": 200,
-        "message": "채팅방 전체 내용을 조회했습니다.",
-        "data": [{
-            "id": "number",
-            "writer": "string",
-            "category": "string",
-            "content": "string",
-            "created_at": "string",
-            "tts_count": 0,
-            "image_count": 0
-        }]
+    chat_room = crud.get_chats(db, chat_id=roomId)
+    if not chat_room:
+        raise HTTPException(status_code=404, detail="채팅 방 찾을 수 없다")
 
-    }  # 단일 채팅방이므로 리스트에 담아서 반환
-    return response
+    return chat_room
 
-@router.get("/bubble/{bubble_id}", response_model=schemas.ChatRoomBase)
-def read_chat_bubble(bubble_id: int, db: Session = Depends(get_db)):
-    db_chat_bubble = crud.get_chat(db, bubble_id=bubble_id)
-    if db_chat_bubble is None:
-        raise HTTPException(status_code=404, detail="Chat not found")
-    return db_chat_bubble

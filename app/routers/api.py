@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from . import users
+from .chat_rooms import router as chat_rooms
 
 router = APIRouter(
     prefix="/api/v1"
 )
 
-router.include_router(users.router)
+router.include_router(chat_rooms)
