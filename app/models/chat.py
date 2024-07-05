@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String,DateTime,Boolean,ForeignKey
 from ..database.session import Base
-from sqlalchemy.orm import relationship
+
 
 
 class Chat(Base):

@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Foreign
 from sqlalchemy.orm import relationship
 from ..database.session import Base
 
-class TTS(Base):
+class Voice(Base):
     __tablename__ = "voice"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

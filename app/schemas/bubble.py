@@ -1,14 +1,12 @@
 from pydantic import BaseModel
-from typing import List
-
+from datetime import datetime
 class ChatBubble(BaseModel):
     id: int
     writer: bool
     category: bool
     content: str
-    created_at: str
+    created_at: datetime
     tts_count: int = 0
     image_count: int = 0
-
     class Config:
-        orm_mode = True
+        from_attributes = True

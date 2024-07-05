@@ -1,10 +1,10 @@
 
 from sqlalchemy import Column, Integer,DateTime,Boolean,Text,ForeignKey
 from ..database.session import Base
-from sqlalchemy.orm import relationship
+
 
 class ChatBubble(Base):
-    __tablename__ = "chatBubble"
+    __tablename__ = "bubble"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     chat_id = Column(Integer, ForeignKey('chat.id'), nullable=False)
@@ -14,7 +14,3 @@ class ChatBubble(Base):
     writer = Column(Boolean, nullable=False)  # AI (0) or User (1)
     category = Column(Boolean, nullable=False)  # Image (0) or Text (1)
     content = Column(Text, nullable=False)
-
-    # chat = relationship("Chat", back_populates="bubbles")
-    # ttss = relationship("TTS", back_populates="bubbles")
-    # images = relationship("Image", back_populates="bubbles")
