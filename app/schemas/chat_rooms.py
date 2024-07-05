@@ -12,7 +12,7 @@ class ChatRoomBase(BaseModel): #말풍선 딱 한개에 대한 정보
     created_at: datetime #생성일자
     tts_count: int # 그 말풍선 하나당 tts를 몇 개 가지고 있나
     image_count: int # 그 말풍선 하나당 image를 몇 개 가지고 있냐
-    character_id: int
+    # character_id: int
 
 class ChatRoomList(BaseModel): #채팅창 다 한꺼번에 보는 것
     data: List[ChatRoomBase] #ChatRoomBase애로 모든 말풍선정보를 받은걸 리스트로 담음

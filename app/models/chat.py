@@ -14,8 +14,8 @@ class Chat(Base):
     updated_at = Column(DateTime, nullable=False)
     name = Column(String(45), nullable=False)
 
-    bubbles= relationship("ChatBubble", back_populates="chat")
-    character= relationship("Character", back_populates="chats")
+    # character = relationship("Character", back_populates="chats")
+    # bubbles = relationship("ChatBubble", back_populates="chat")
 
     # 1= relationship("2", back_populates="3") 이라고 가정하면
     # 1 여기서 "1"은 클래스 내에서 사용할 변수 이름을 의미합니다. 이 변수는 관계된 객체를 참조하는 데 사용됩니다.예를 들어, ChatModel 클래스에서 bubbles라는 변수를 사용하면 ChatBubble 객체들의 목록을 참조할 수 있습니다

@@ -15,6 +15,6 @@ class ChatBubble(Base):
     category = Column(Boolean, nullable=False)  # Image (0) or Text (1)
     content = Column(Text, nullable=False)
 
-    ttss= relationship("TTS", back_populates="bubble")
-    chat= relationship("Chat", back_populates="bubbles")
-    images= relationship("Image", back_populates="bubble")
+    # chat = relationship("Chat", back_populates="bubbles")
+    # ttss = relationship("TTS", back_populates="bubbles")
+    # images = relationship("Image", back_populates="bubbles")
