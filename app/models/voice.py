@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 class Voice(Base):
     __tablename__ = "voice"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    bubble_id = Column(Integer, ForeignKey('chatBubble.id'))
+    bubble_id = Column(Integer, ForeignKey('bubble.id'))
     is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)

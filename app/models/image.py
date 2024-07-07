@@ -9,7 +9,7 @@ class Image(Base):
     __tablename__ = "image"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    bubble_id = Column(Integer, ForeignKey('chatBubble.id'), nullable=False)
+    bubble_id = Column(Integer, ForeignKey('bubble.id'), nullable=False)
     is_deleted = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
