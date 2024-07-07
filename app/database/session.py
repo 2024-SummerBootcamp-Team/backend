@@ -42,6 +42,7 @@ print(SQLALCHEMY_DATABASE_URL)
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
+    connect_args={"connect_timeout": 10},
 
     pool_size=20,          # 기본 풀 크기
     max_overflow=40,       # 최대 오버플로우 수
