@@ -17,3 +17,4 @@ class Bubble(Base):
     content = Column(Text, nullable=False)
 
     voices = relationship("Voice", back_populates="bubble")
+
