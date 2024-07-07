@@ -33,6 +33,17 @@ def upload_image(file):
         logging.error(e)
         return False
 
+    """
+    이미지 업로드 성공시 이미지 URL을 반환한다.
+    URL을 사용하는 이유는 URL이 S3 버킷에 업로드된 이미지의 주소이기 때문이다.
+    URL 형식은 다음과 같다.
+    https://[bucket name].s3.[aws-region].amazonaws.com/[object name]
+    aws region은 버킷이 존재하는 리전을 의미한다.
+    bucket name은 버킷의 이름을 의미한다.
+    object name은 업로드된 객체명을 의미한다.
+    - S3 버킷은 폴더 구조로 되어 있기 때문에 /를 사용하여 폴더 안에 넣을 수 있다.
+    """
+
     return f'https://{bucket_name}.s3.ap-northeast-2.amazonaws.com/{object_name}'
 
 
@@ -53,4 +64,15 @@ def upload_voice(file):
         logging.error(e)
         return False
 
+    """
+    음성파일 업로드 성공시 이미지 URL을 반환한다.
+    URL을 사용하는 이유는 URL이 S3 버킷에 업로드된 이미지의 주소이기 때문이다.
+       
+    URL 형식은 다음과 같다.
+    https://[bucket name].s3.[aws-region].amazonaws.com/[object name]
+    aws region은 버킷이 존재하는 리전을 의미한다.
+    bucket name은 버킷의 이름을 의미한다.
+    object name은 업로드된 객체명을 의미한다.
+    - S3 버킷은 폴더 구조로 되어 있기 때문에 /를 사용하여 폴더 안에 넣을 수 있다.
+    """
     return f'https://{bucket_name}.s3.ap-northeast-2.amazonaws.com/{object_name}'
