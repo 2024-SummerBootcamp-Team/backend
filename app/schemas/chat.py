@@ -6,9 +6,9 @@ from typing import List
 
 class ChatRoomBase(BaseModel):
     id: int
-    character_id:int
+    character_id: int
     created_at: datetime
-    name:str
+    name: str
 
     class Config:
         from_attributes = True
