@@ -11,6 +11,6 @@ class ChatBubble(Base):
     is_deleted = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
-    writer = Column(Boolean, nullable=False)  # AI (0) or User (1)
-    category = Column(Boolean, nullable=False)  # Image (0) or Text (1)
+    writer = Column(Boolean, nullable=False,server_default="0")  # AI (0) or User (1)
+    category = Column(Boolean, nullable=False,server_default="0")  # Image (0) or Text (1)
     content = Column(Text, nullable=False)
