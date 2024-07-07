@@ -1,4 +1,4 @@
-# schemas/chat.py
+# schemas/chat_service.py
 
 from pydantic import BaseModel
 from datetime import datetime
