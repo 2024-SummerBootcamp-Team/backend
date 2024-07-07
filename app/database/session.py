@@ -10,10 +10,8 @@ DATABASE_PASSWORD = get_settings().MYSQL_PASSWORD
 DATABASE_PORT = get_settings().MYSQL_PORT
 DATABASE_DBNAME = get_settings().MYSQL_DBNAME
 
-
-
-# SQLALCHEMY_DATABASE_URL = f'mysql+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_URL}:{DATABASE_PORT}/{DATABASE_DBNAME}'
-SQLALCHEMY_DATABASE_URL = 'sqlite:///.test.db'
+SQLALCHEMY_DATABASE_URL = f'mysql+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_URL}:{DATABASE_PORT}/{DATABASE_DBNAME}'
+#SQLALCHEMY_DATABASE_URL = 'sqlite:///.test.db'
 
 print(SQLALCHEMY_DATABASE_URL)
 
@@ -32,7 +30,6 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
-
 
 def get_db():
     db = SessionLocal()
