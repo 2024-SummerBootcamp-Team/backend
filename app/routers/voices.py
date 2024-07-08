@@ -7,6 +7,7 @@ from ..services import voice_service, chat_service
 
 from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList
 
+
 router = APIRouter(
     prefix="/voices",
     tags=["voices"],

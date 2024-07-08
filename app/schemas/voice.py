@@ -3,6 +3,7 @@ from typing import List
 from pydantic import BaseModel
 from datetime import datetime
 
+
 class VoiceBase(BaseModel):
     id: int
     bubble_id: int
@@ -13,11 +14,14 @@ class VoiceBase(BaseModel):
     class Config:
         from_attributes = True
 
+
 class VoiceBaseList(BaseModel):
     voices: List[VoiceBase]
 
     class Config:
         from_attributes = True
+
+
 class VoiceDetail(BaseModel):
     id: int
     chat_id: int
@@ -29,6 +33,7 @@ class VoiceDetail(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class VoiceDetailList(BaseModel):
     voices: List[VoiceDetail]
