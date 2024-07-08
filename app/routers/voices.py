@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..database.session import get_db
 from ..services import voice_service, chat_service
 
-from app.schemas.voice import VoiceBase,voice
+from app.schemas.voice import VoiceBase,VoiceDeleted
 
 router = APIRouter(
     prefix="/voices",
@@ -35,10 +35,23 @@ def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
-    voice_service.delete_voice(db, voice_id=voice_id)
+    voice_service.hard_delete_voice(db, voice_id=voice_id)
 
-@router.put("/{voice_id}",response_model=VoiceDeleted)
+@router.patch("/{voice_id}")
 def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
+    voice = voice_service.get_voice(db, voice_id=voice_id)
+    print("voice:", voice)
+    if not voice:
+        raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
+    voice_service.soft_delete_voice(db, voice_id=voice_id)
+    return {
+        "code": 200,
+        "message": "TTS를 삭제했습니다.",
+        "data": None  # or you can omit this line, as 'data' being None is default in the response_model
+    }
+
+
+
 
 
 
