@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..database.session import get_db
 from ..services import voice_service, chat_service
 
-from app.schemas.voice import VoiceBase, VoiceBaseList
+from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList
 
 router = APIRouter(
     prefix="/voices",
@@ -13,7 +13,15 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-# 저장한 목소리 목록 조회
+
+# 저장된 모둔 목소리 목록 조회
+@router.get("", response_model=VoiceDetailList)
+def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    voices = voice_service.get_voices(db, skip=skip, limit=limit)
+    return VoiceDetailList(voices=voices)
+
+
+# 채팅방 별 저장한 목소리 목록 조회
 @router.get("/chat/{chat_id}", response_model=VoiceBaseList)
 def read_voices_by_chat(chat_id: int, db: Session = Depends(get_db)):
     chat_room = chat_service.get_chat_room(db, chat_room_id=chat_id)

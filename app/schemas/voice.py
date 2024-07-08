@@ -29,3 +29,9 @@ class VoiceDetail(BaseModel):
 
     class Config:
         from_attributes = True
+
+class VoiceDetailList(BaseModel):
+    voices: List[VoiceDetail]
+
+    class Config:
+        from_attributes = True

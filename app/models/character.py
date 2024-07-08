@@ -1,6 +1,7 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from ..database.session import Base
+from sqlalchemy.orm import relationship
 
 
 class Character(Base):
@@ -12,3 +13,5 @@ class Character(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     name = Column(String(20), nullable=False)
     prompt = Column(Text, nullable=False)
+
+    chats = relationship("Chat", back_populates="character")

@@ -2,10 +2,23 @@ from sqlalchemy.orm import Session
 
 from app.models.bubble import Bubble
 from app.models.voice import Voice
+from app.schemas.voice import VoiceDetail
 
 
 # 저장된 모든 목소리 목록 조회
-# def get_voices():
+def get_voices(db: Session, skip: int = 0, limit: int = 100):
+    voices = db.query(Voice).offset(skip).limit(limit).all()
+    voice_details = [VoiceDetail(
+        id=voice.id,
+        chat_id=voice.bubble.chat_id,
+        character=voice.bubble.chat.character.name,
+        bubble_id=voice.bubble_id,
+        audio_url=voice.audio_url,
+        content=voice.content,
+        created_at=voice.created_at.isoformat()
+    ) for voice in voices]
+    return voice_details
+
 
 # 채팅방 별 목소리 목록 조회
 def get_voices_by_chat_id(db: Session, chat_id: int):
