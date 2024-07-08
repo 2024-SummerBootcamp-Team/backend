@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..database.session import get_db
 from ..services import voice_service, chat_service
 
-from app.schemas.voice import VoiceBase,VoiceDeleted
+from app.schemas.voice import VoiceBase
 
 router = APIRouter(
     prefix="/voices",
