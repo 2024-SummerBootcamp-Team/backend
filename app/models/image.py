@@ -2,7 +2,6 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
 from ..database.session import Base
 
-# from sqlalchemy.orm import relationship
 
 
 class Image(Base):
@@ -16,4 +15,5 @@ class Image(Base):
     content = Column(Text, nullable=False)
     image_url = Column(String(500), nullable=False)
 
-    # bubble = relationship("ChatBubble", back_populates="images")
+
+
