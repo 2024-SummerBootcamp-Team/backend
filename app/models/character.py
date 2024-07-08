@@ -8,6 +8,7 @@ from ..database.session import Base
 class Character(Base):
     __tablename__ = 'character'
 
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     is_deleted = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
@@ -16,3 +17,4 @@ class Character(Base):
     prompt = Column(Text, nullable=False)
 
     # chats = relationship("Chat", back_populates="character")
+

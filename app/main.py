@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from .routers import api
-from app.routers import images_router
 
 # FastAPI를 실행하기 위해 인스턴스 생성
 app = FastAPI()

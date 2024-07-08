@@ -16,4 +16,5 @@ class Image(Base):
     content = Column(Text, nullable=False)
     image_url = Column(String(500), nullable=False)
 
-    # bubble = relationship("ChatBubble", back_populates="images")
+   # bubble = relationship("Bubble", back_populates="images")
+
