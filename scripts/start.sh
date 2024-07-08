@@ -17,18 +17,18 @@ if [ -z "$EXIST_DOCKER_APP" ]; then
 
     # docker-compose 파일 실행
     echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 실행" >> $DEPLOY_LOG
-    nohup docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml up -d --build >> $DEPLOY_LOG 2> $DEPLOY_LOG
+    docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml up -d --build >> $DEPLOY_LOG
 
 
 else
 
     # docker-compose 파일 종료
     echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 종료" >> $DEPLOY_LOG
-    nohup docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml down >> $DEPLOY_LOG 2> $DEPLOY_LOG
+    docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml down >> $DEPLOY_LOG
 
     # docker-compose 파일 실행
     echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 실행" >> $DEPLOY_LOG
-    nohup docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml up -d --build >> $DEPLOY_LOG 2> $DEPLOY_LOG
+    docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml up -d --build >> $DEPLOY_LOG
 
 
 fi
