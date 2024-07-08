@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -10,12 +12,20 @@ class VoiceBase(BaseModel):
 
     class Config:
         from_attributes = True
-class VoiceDeleted(BaseModel):
+
+class VoiceBaseList(BaseModel):
+    voices: List[VoiceBase]
+
+    class Config:
+        from_attributes = True
+class VoiceDetail(BaseModel):
     id: int
+    chat_id: int
+    character: str
+    bubble_id: int
     audio_url: str
     content: str
-    created_at: datetime
-
+    created_at: str
 
     class Config:
         from_attributes = True

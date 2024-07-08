@@ -12,7 +12,6 @@ def get_chat_room(db: Session, chat_room_id: int):  # 클라이언트가 알고�
 
 
 def get_bubbles(db: Session, chat_id: int):  # 클라이언트가 알고싶어하는 채팅방 id가 chat_id임
-
     bubbles = db.query(BubbleModel).filter(BubbleModel.chat_id == chat_id).all()  # 특정방의 말풍선들정보를 가지고 옴
 
     bubble_list = []

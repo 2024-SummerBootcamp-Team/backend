@@ -2,8 +2,6 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from ..database.session import Base
 
-from sqlalchemy.orm import relationship
-
 
 class Chat(Base):
     __tablename__ = "chat"
@@ -14,5 +12,3 @@ class Chat(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     name = Column(String(45), nullable=False)
-
-    # bubbles = relationship("Bubble", back_populates="chat")

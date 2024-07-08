@@ -16,6 +16,5 @@ class Bubble(Base):
     category = Column(Boolean, nullable=False, server_default="0")  # Image (0) or Text (1)
     content = Column(Text, nullable=False)
 
-    # chat = relationship("Chat", back_populates="bubbles")
     voices = relationship("Voice", back_populates="bubble")
 
