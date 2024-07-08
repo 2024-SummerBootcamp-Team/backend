@@ -31,13 +31,13 @@ execute_and_log "docker ps -a"
 
 if [ -z "$EXIST_DOCKER_APP" ]; then
     log_message "docker compose 파일 실행"
-    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f docker-compose.yml up -d --build"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose.yml up -d --build"
 else
     log_message "docker compose 파일 종료"
-    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f docker-compose.yml down"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose.yml down"
 
     log_message "docker-compose 파일 재실행"
-    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f docker-compose.yml up -d --build"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose.yml up -d --build"
 fi
 
 CURRENT_PID=$(docker ps | grep $DOCKER_APP_NAME | awk '{print $1}')
