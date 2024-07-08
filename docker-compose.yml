@@ -1,0 +1,9 @@
+services:
+
+  fastapi-server:
+    build: app/
+    container_name: fastapi-server
+    volumes:
+      - ~/.aws:/root/.aws
+    ports:
+      - 80:80
