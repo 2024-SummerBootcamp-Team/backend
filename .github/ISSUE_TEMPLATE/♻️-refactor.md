@@ -2,8 +2,9 @@
 name: "♻️ Refactor"
 about: 코드를 개선시키거나 구조를 변경합니다.
 title: "[refactor] "
-labels: ""
-assignees: ""
+labels: ''
+assignees: ''
+
 ---
 
 ## 작업 내용 설명

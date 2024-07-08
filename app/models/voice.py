@@ -8,7 +8,7 @@ class Voice(Base):
     __tablename__ = "voice"
     id = Column(Integer, primary_key=True, autoincrement=True)
     bubble_id = Column(Integer, ForeignKey('bubble.id'))
-    is_deleted = Column(Boolean, default=False)
+    is_deleted = Column(Boolean, default=False) #기본값이 안지워진것
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     content = Column(Text, nullable=False)
