@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-# 저장된 모둔 목소리 목록 조회
+# 저장된 모든 목소리 목록 조회
 @router.get("", response_model=VoiceDetailList)
 def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     voices = voice_service.get_voices(db, skip=skip, limit=limit)
