@@ -14,6 +14,6 @@ permissions:
 
 hooks:
   ApplicationStart:
-    - location: scripts/start.sh
+    - location: app/scripts/start.sh
       timeout: 60
       runas: ec2-user
