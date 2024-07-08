@@ -26,6 +26,7 @@ def read_voices(chat_id: int, db: Session = Depends(get_db)):
 @router.get("/{voice_id}", response_model=VoiceBase)
 def read_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
+
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     return voice
@@ -37,10 +38,10 @@ def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.hard_delete_voice(db, voice_id=voice_id)
 
-@router.patch("/{voice_id}")
+@router.put("/{voice_id}")
 def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
-    print("voice:", voice)
+
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.soft_delete_voice(db, voice_id=voice_id)
