@@ -17,21 +17,19 @@ if [ -z "$EXIST_DOCKER_APP" ]; then
 
     # docker-compose 파일 실행
     echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 실행" >> $DEPLOY_LOG
-    docker-compose -p ${DOCKER_APP_NAME} -f docker-compose.yml up -d --build
+    docker-compose -p ${DOCKER_APP_NAME} -f app/docker-compose.yml up -d --build
 
-    sleep 20
 
 else
 
     # docker-compose 파일 종료
     echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 종료" >> $DEPLOY_LOG
-    docker-compose -p ${DOCKER_APP_NAME} -f docker-compose.yml down
+    docker-compose -p ${DOCKER_APP_NAME} -f app/docker-compose.yml down
 
     # docker-compose 파일 실행
     echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 실행" >> $DEPLOY_LOG
-    docker-compose -p ${DOCKER_APP_NAME} -f docker-compose.yml up -d --build
+    docker-compose -p ${DOCKER_APP_NAME} -f app/docker-compose.yml up -d --build
 
-    sleep 20
 
 fi
 
