@@ -7,7 +7,7 @@ from app.schemas.voice import VoiceDetail
 
 # 저장된 모든 목소리 목록 조회
 def get_voices(db: Session, skip: int = 0, limit: int = 100):
-    voices = db.query(Voice).offset(skip).limit(limit).all()
+    voices = db.query(Voice).filter(Voice.is_deleted == False).offset(skip).limit(limit).all()
     voice_details = [VoiceDetail(
         id=voice.id,
         chat_id=voice.bubble.chat_id,
@@ -15,7 +15,7 @@ def get_voices(db: Session, skip: int = 0, limit: int = 100):
         bubble_id=voice.bubble_id,
         audio_url=voice.audio_url,
         content=voice.content,
-        created_at=voice.created_at.isoformat()
+        created_at=voice.created_at
     ) for voice in voices]
     return voice_details
 

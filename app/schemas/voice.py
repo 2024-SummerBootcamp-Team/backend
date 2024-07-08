@@ -29,7 +29,7 @@ class VoiceDetail(BaseModel):
     bubble_id: int
     audio_url: str
     content: str
-    created_at: str
+    created_at: datetime
 
     class Config:
         from_attributes = True
