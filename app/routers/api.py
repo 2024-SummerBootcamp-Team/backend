@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from . import chats
-from . import voice
+from . import voices
 
 router = APIRouter(
     prefix="/api/v1"
 )
 
 router.include_router(chats.router)
-router.include_router(voice.router)
+router.include_router(voices.router)

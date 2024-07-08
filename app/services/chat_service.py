@@ -8,7 +8,7 @@ from typing import List
 
 
 def get_chat_room(db: Session, chat_room_id: int):  # 클라이언트가 알고싶어하는 채팅방 id가 chat_room_id임
-    return db.query(ChatModel).filter(ChatModel.id == chat_room_id).first()
+    return db.query(ChatModel).filter(ChatModel.id == chat_room_id,ChatModel.is_deleted == False).first()
 
 
 def get_bubbles(db: Session, chat_id: int):  # 클라이언트가 알고싶어하는 채팅방 id가 chat_id임
