@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from ..database.session import Base
 
-# from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship
 
 
 class Chat(Base):
@@ -15,4 +15,4 @@ class Chat(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     name = Column(String(45), nullable=False)
 
-    # bubbles = relationship("ChatBubble", back_populates="chat")
+    # bubbles = relationship("Bubble", back_populates="chat")

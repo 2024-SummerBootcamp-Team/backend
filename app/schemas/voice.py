@@ -1,17 +1,12 @@
-# schemas/chat_service.py
-
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
 
-class ChatRoomBase(BaseModel):
+class VoiceBase(BaseModel):
     id: int
-    character_id: int
+    bubble_id: int
+    audio_url: str
+    content: str
     created_at: datetime
-    name: str
 
     class Config:
         from_attributes = True
-
-
-
