@@ -3,7 +3,6 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Foreign
 from ..database.session import Base
 
 
-
 class Image(Base):
     __tablename__ = "image"
 
@@ -14,6 +13,3 @@ class Image(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     content = Column(Text, nullable=False)
     image_url = Column(String(500), nullable=False)
-
-
-

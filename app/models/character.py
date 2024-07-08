@@ -1,8 +1,7 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text
 from ..database.session import Base
-
-# from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship
 
 
 class Character(Base):
@@ -16,5 +15,4 @@ class Character(Base):
     name = Column(String(20), nullable=False)
     prompt = Column(Text, nullable=False)
 
-    # chats = relationship("Chat", back_populates="character")
-
+    chats = relationship("Chat", back_populates="character")
