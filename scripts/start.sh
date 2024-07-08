@@ -11,33 +11,41 @@ TIME_NOW=$(date +%c)
 
 EXIST_DOCKER_APP=$(docker ps -a | grep $DOCKER_APP_NAME)
 
-# docker-compose 파일 실행
-# docker compose가 실행 중이면 종료
+log_message() {
+    local message=$1
+    echo "$TIME_NOW > $message" | tee -a $DEPLOY_LOG
+}
+
+execute_and_log() {
+    local command=$1
+    log_message "실행: $command"
+    eval $command >> $DEPLOY_LOG 2>> $ERROR_LOG
+    if [ $? -eq 0 ]; then
+        log_message "성공: $command"
+    else
+        log_message "실패: $command"
+    fi
+}
+
+execute_and_log "docker ps -a"
+
 if [ -z "$EXIST_DOCKER_APP" ]; then
-
-    # docker-compose 파일 실행
-    echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 실행" >> $DEPLOY_LOG
-    docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml up -d --build >> $DEPLOY_LOG
-
-
+    log_message "docker compose 파일 실행"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f docker-compose.yml up -d --build"
 else
+    log_message "docker compose 파일 종료"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f docker-compose.yml down"
 
-    # docker-compose 파일 종료
-    echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 종료" >> $DEPLOY_LOG
-    docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml down >> $DEPLOY_LOG
-
-    # docker-compose 파일 실행
-    echo "$TIME_NOW > $PROJECT_ROOT docker-compose 파일 실행" >> $DEPLOY_LOG
-    docker-compose -p ${DOCKER_APP_NAME} docker-compose.yml up -d --build >> $DEPLOY_LOG
-
-
+    log_message "docker-compose 파일 재실행"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f docker-compose.yml up -d --build"
 fi
 
-CURRENT_PID=$(pgrep -f $DOCKER_APP_NAME)
-echo "$TIME_NOW > 실행된 프로세스 아이디 $CURRENT_PID 입니다." >> $DEPLOY_LOG
+CURRENT_PID=$(docker ps | grep $DOCKER_APP_NAME | awk '{print $1}')
+if [ -z "$CURRENT_PID" ]; then
+    log_message "실행된 프로세스를 찾을 수 없습니다."
+else
+    log_message "실행된 프로세스 아이디는 $CURRENT_PID 입니다."
+fi
 
-echo "$TIME_NOW > 배포 종료" >> $DEPLOY_LOG
-
-echo "===================== 배포 완료 =====================" >> $DEPLOY_LOG
-
-echo >> $DEPLOY_LOG
+log_message "배포 종료"
+log_message "===================== 배포 완료 ====================="
