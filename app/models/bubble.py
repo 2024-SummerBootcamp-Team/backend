@@ -18,4 +18,5 @@ class Bubble(Base):
 
     chat = relationship("Chat", back_populates="bubbles")
     voices = relationship("Voice", back_populates="bubble")
+    images = relationship("Image", back_populates="bubble")
 
