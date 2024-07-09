@@ -19,7 +19,10 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY ./ /app/
 
 # 포트 오픈
-EXPOSE 80
+#EXPOSE 8000
 
 # fastapi 서버 실행
-CMD ["fastapi", "run", "main.py", "--port", "80"]
+#CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"] # 프로덕션 배포용
+
+# 개발용
+CMD ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8000"]
