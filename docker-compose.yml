@@ -6,4 +6,16 @@ services:
     volumes:
       - ~/.aws:/root/.aws
     ports:
-      - 80:80
+      - 8000:8000
+    develop:
+      watch:
+        - action: sync
+          path: app/
+          target: app/
+          ignore:
+            - venv/
+            - __pycache__/
+        - action: rebuild
+          path: app/requirements.txt
+          target: app/
+      restart: always
