@@ -4,6 +4,9 @@ from sqlalchemy.orm import sessionmaker
 from ..config.config import get_settings
 from ..config.aws.secret import get_secret
 import json
+import redis
+
+r = redis.Redis(host='localhost', port=6379, db=0)
 
 """
 aws secret manager를 사용하여 데이터베이스 정보를 가져오는 방법
