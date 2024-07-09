@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.session import get_db
-from ..services import image_service, chat_service
-
+from ..services import image_service, chat_service, bubble_service
+from app.config.aws.s3Client import upload_image
 from app.schemas.image import ImageBase, ImageBaseList, ImageDetailList
-
+from pydantic import ValidationError
+from ..schemas.image import ImageCreateRequest
+from fastapi import FastAPI, File, UploadFile #fastapi에서 file과 uploadFile 임포트
 
 router = APIRouter(
     prefix="/images",
@@ -30,7 +32,7 @@ def read_images_by_chat(chat_id: int, db: Session = Depends(get_db)):
     return ImageBaseList(images=images)
 
 @router.get("/{image_id}", response_model=ImageBase)
-def get_image(image_id: int, db: Session = Depends(get_db)):
+def read_image (image_id: int, db: Session = Depends(get_db)):
     image = image_service.get_image(db, image_id=image_id)
     if not image:
         raise HTTPException(status_code=404, detail="발췌 이미지 정보를 불러오는데 실패했습니다.")
@@ -56,5 +58,25 @@ def soft_delete_image (image_id: int, db : Session = Depends(get_db)):
             "data": None
         }
 
+@router.post("/{bubble_id}")
+def create_image_room (req: ImageCreateRequest, bubble_id:int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    valid_bubble_id = bubble_service.get_bubble(db, bubble_id=bubble_id)
 
+    if not valid_bubble_id:
+        raise HTTPException(status_code=404, detail="대화 정보를 불러오는데 실패했습니다.")
 
+    try:
+        image_url = upload_image(file)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"S3에 이미지 업로드 실패: {str(e)}")
+
+    db_image = image_service.create_image_room(db,
+                                              bubble_id=req.bubble_id,
+                                              content=req.content,
+                                              image_url=image_url
+                                              )
+
+    if not db_image:
+        raise HTTPException(status_code=404, detail="대화 정보를 불러오는데 실패했습니다.")
+
+    return True
