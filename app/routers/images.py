@@ -68,7 +68,7 @@ async def create_image_room (bubble_id: int, content: str = Form(...), file: Upl
     try:
         image_url = await upload_image(file)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"S3에 이미지 업로드 실패: {str(e)}")
+        raise HTTPException(status_code=500, detail="S3에 이미지 업로드 실패: {str(e)}")
 
     image = image_service.create_image_room(db, bubble_id=bubble_id, content=content, image_url=image_url)
 
