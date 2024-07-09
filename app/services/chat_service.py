@@ -1,24 +1,37 @@
-from app.models.chat import Chat as ChatModel
+from app.models.chat import Chat
 from sqlalchemy.orm import Session
-from app.models.voice import Voice as TTSModel
-from app.models.image import Image as ImageModel
+from app.models.voice import Voice
+from app.models.image import Image
 from app.schemas.bubble import ChatBubble, ChatBubbleList
-from app.models.bubble import Bubble as BubbleModel
-from typing import List
-from app.models.character import Character as CharacterModel
+from app.schemas.chat import ChatRoomBase
+from app.models.bubble import Bubble
 
 
-def get_chat_room(db: Session, chat_room_id: int):  # 클라이언트가 알고싶어하는 채팅방 id가 chat_room_id임
-    return db.query(ChatModel).filter(ChatModel.id == chat_room_id, ChatModel.is_deleted == False).first()
+
+
+def get_chat_room(db: Session, chat_room_id: int):
+    chat=db.query(Chat).filter(Chat.id == chat_room_id, Chat.is_deleted == False).first()
+
+
+
+    # ChatRoomBase 스키마를 사용하여 반환
+    return ChatRoomBase(
+        id=chat.id,
+        character_id=chat.character_id,
+        character_name=chat.character.name,
+        created_at=chat.created_at,
+        name=chat.name
+    )
+
 
 
 def get_bubbles(db: Session, chat_id: int):  # 클라이언트가 알고싶어하는 채팅방 id가 chat_id임
-    bubbles = db.query(BubbleModel).filter(BubbleModel.chat_id == chat_id).all()  # 특정방의 말풍선들정보를 가지고 옴
+    bubbles = db.query(Bubble).filter(Bubble.chat_id == chat_id).all()  # 특정방의 말풍선들정보를 가지고 옴
 
     bubble_list = []
     for bubble in bubbles:
-        tts_count = db.query(TTSModel).filter(TTSModel.bubble_id == bubble.id).count()
-        image_count = db.query(ImageModel).filter(ImageModel.bubble_id == bubble.id).count()
+        tts_count = db.query(Voice).filter(Voice.bubble_id == bubble.id).count()
+        image_count = db.query(Image).filter(Image.bubble_id == bubble.id).count()
 
         bubble_form = ChatBubble(
             id=bubble.id,
@@ -36,7 +49,7 @@ def get_bubbles(db: Session, chat_id: int):  # 클라이언트가 알고싶어�
 
 
 def create_chat_room(db: Session, chat_name: str, character_id: int):
-    chat = ChatModel(name=chat_name, character_id=character_id)
+    chat = Chat(name=chat_name, character_id=character_id)
     db.add(chat)
     db.commit()
     db.refresh(chat)

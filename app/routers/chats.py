@@ -34,6 +34,8 @@ def read_chat_bubble(chat_id: int, db: Session = Depends(get_db)):
     return chat_bubble
 
 
+
+
 @router.post("", response_model=ChatCreateResponse)
 def create_chat_room(req: ChatCreateRequest, db: Session = Depends(get_db)):
     vaild_character_name = character_service.validate_character_name(db, character_name=req.character_name)
