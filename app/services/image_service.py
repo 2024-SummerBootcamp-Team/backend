@@ -44,7 +44,7 @@ def soft_delete_image(db: Session, image_id: int) -> None:
         db.commit()
 
 #발췌 이미지 생성
-def create_image_room(db: Session, content: str, bubble_id: int, image_url: str) -> Image:
+def create_image_room(db: Session, bubble_id: int, content: str,  image_url: str):
     image = ImageModel(bubble_id = bubble_id, content=content, image_url=image_url)
     db.add(image)
     db.commit()

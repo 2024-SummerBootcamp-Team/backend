@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
 from sqlalchemy.orm import Session
 from app.database.session import get_db
 from ..services import image_service, chat_service, bubble_service
@@ -59,24 +59,17 @@ def soft_delete_image (image_id: int, db : Session = Depends(get_db)):
         }
 
 @router.post("/{bubble_id}")
-def create_image_room (req: ImageCreateRequest, bubble_id:int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def create_image_room (bubble_id: int, content: str = Form(...), file: UploadFile = File(...), db: Session = Depends(get_db)):
     valid_bubble_id = bubble_service.get_bubble(db, bubble_id=bubble_id)
 
     if not valid_bubble_id:
         raise HTTPException(status_code=404, detail="대화 정보를 불러오는데 실패했습니다.")
 
     try:
-        image_url = upload_image(file)
+        image_url = await upload_image(file)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"S3에 이미지 업로드 실패: {str(e)}")
 
-    db_image = image_service.create_image_room(db,
-                                              bubble_id=req.bubble_id,
-                                              content=req.content,
-                                              image_url=image_url
-                                              )
+    image = image_service.create_image_room(db, bubble_id=bubble_id, content=content, image_url=image_url)
 
-    if not db_image:
-        raise HTTPException(status_code=404, detail="대화 정보를 불러오는데 실패했습니다.")
-
-    return True
+    return image

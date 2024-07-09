@@ -53,3 +53,6 @@ class ImageRoomBase(BaseModel):
 
 class ImageCreateRequest(BaseModel):
     content: str
+
+    class Config:
+        from_attributes = True

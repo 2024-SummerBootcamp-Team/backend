@@ -1,7 +1,8 @@
 import logging
-import boto3
+import aioboto3
 import uuid  # uuid4를 사용하여 파일명을 생성한다. 중복을 방지하기 위해서이다.
 from botocore.exceptions import ClientError
+from fastapi import HTTPException
 
 """
 UUID(Universally Unique IDentifier)
@@ -14,24 +15,22 @@ UUID는 범용 고유 식별자로, 128비트의 수이다.
 
 
 # 이미지 전송 함수
-def upload_image(file):
+async def upload_image(file):
     bucket_name = "teamh-bucket"
     object_name = "images/" + str(uuid.uuid4()) + ".webp"  # 업로드할 객체명, /를 사용하면 폴더 안에 넣을 수 있다
 
     # Create an S3 client
-    s3_client = boto3.client('s3')
-
-    try:
-        # 해당 하는 이미지를 업로드 한다.
-        s3_client.upload_fileobj(
-            file,  # 업로드할 파일
-            bucket_name,  # 업로드할 버킷
-            object_name # 업로드할 객체명
-        )
-
-    except ClientError as e:
-        logging.error(e)
-        return False
+    session = aioboto3.Session()
+    async with session.client('s3') as s3_client:
+        try:
+            await s3_client.upload_fileobj(
+                file.file,
+                bucket_name,
+                object_name
+            )
+        except ClientError as e:
+            logging.error(e)
+            raise HTTPException(status_code=500, detail="S3에 이미지 업로드 실패: {str(e)}")
 
     """
     이미지 업로드 성공시 이미지 URL을 반환한다.
@@ -47,22 +46,22 @@ def upload_image(file):
     return f'https://{bucket_name}.s3.ap-northeast-2.amazonaws.com/{object_name}'
 
 
-def upload_voice(file):
+async def upload_voice(file):
     bucket_name = "teamh-bucket"
     object_name = "voices/" + str(uuid.uuid4()) + ".mp3"  # 업로드할 객체명, /를 사용하면 폴더 안에 넣을 수 있다
 
     # Create an S3 client
-    s3_client = boto3.client('s3')
-
-    try:
-        s3_client.upload_fileobj(
-            file, # 업로드할 파일
-            bucket_name, # 업로드할 버킷
-            object_name # 업로드할 객체명
-        )
-    except ClientError as e:
-        logging.error(e)
-        return False
+    session = aioboto3.Session()
+    async with session.client('s3') as s3_client:
+        try:
+            await s3_client.upload_fileobj(
+                file.file,
+                bucket_name,
+                object_name
+            )
+        except ClientError as e:
+            logging.error(e)
+            raise HTTPException(status_code=500, detail="S3에 이미지 업로드 실패: {str(e)}")
 
     """
     음성파일 업로드 성공시 이미지 URL을 반환한다.
