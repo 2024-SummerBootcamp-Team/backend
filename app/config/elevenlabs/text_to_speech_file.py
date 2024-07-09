@@ -1,25 +1,16 @@
 import json
+import os
 import uuid
 
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 
-from app.config.aws.secret import get_secret
-
-# secrets = json.loads(get_secret())
-# ELEVENLABS_API_KEY =secrets.get("ELEVENLABS_API_KEY")
-ELEVENLABS_API_KEY ="임시"
-
-if not ELEVENLABS_API_KEY:
-    raise ValueError("ELEVENLABS_API_KEY environment variable not set")
-
-client = ElevenLabs(
-    api_key=ELEVENLABS_API_KEY,
-)
+client = ElevenLabs()
 
 
 def text_to_speech_file(text: str) -> str:
     """
+    TTS 생성과 동시에 파일 저장이 됩니다.
     Converts text to speech and saves the output as an MP3 file.
 
     This function uses a specific client for text-to-speech conversion. It configures

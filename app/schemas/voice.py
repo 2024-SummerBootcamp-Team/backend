@@ -43,7 +43,7 @@ class VoiceDetailList(BaseModel):
 
 
 # tts 생성 테스트
-class VoiceCreate(BaseModel):
+class VoiceCreateRequest(BaseModel):
     bubble_id: int
     content: str
 

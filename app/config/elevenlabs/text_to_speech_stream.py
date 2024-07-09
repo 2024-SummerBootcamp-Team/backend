@@ -1,19 +1,11 @@
+import os
 from io import BytesIO
 from typing import IO, Generator
 
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
 
-# secrets = json.loads(get_secret())
-# ELEVENLABS_API_KEY =secrets.get("ELEVENLABS_API_KEY")
-ELEVENLABS_API_KEY ="임시"
-
-if not ELEVENLABS_API_KEY:
-    raise ValueError("ELEVENLABS_API_KEY environment variable not set")
-
-client = ElevenLabs(
-    api_key=ELEVENLABS_API_KEY,
-)
+client = ElevenLabs()
 
 
 def text_to_speech_stream(text: str) -> IO[bytes]:

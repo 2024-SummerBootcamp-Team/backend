@@ -10,7 +10,7 @@ from ..config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from ..database.session import get_db
 from ..services import voice_service, chat_service
 
-from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreate
+from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreateRequest
 
 router = APIRouter(
     prefix="/voices",
@@ -69,13 +69,13 @@ def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
 
 # tts 생성 테스트
 @router.post("/tts/file")
-def create_tts_file(req: VoiceCreate):
+def create_tts_file(req: VoiceCreateRequest):
     file_path = text_to_speech_file(req.content)
     return FileResponse(file_path, media_type='audio/mpeg', filename=file_path.split("/")[-1])
 
 
 @router.post("/tts/stream")
-def create_tts_stream(req: VoiceCreate):
+def create_tts_stream(req: VoiceCreateRequest):
     audio_stream = text_to_speech_stream(req.content)
     return StreamingResponse(content=audio_stream, media_type="audio/mpeg")
 
