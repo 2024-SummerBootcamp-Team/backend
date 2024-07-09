@@ -2,11 +2,15 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from starlette.responses import FileResponse, StreamingResponse
+from starlette.websockets import WebSocket
+
+from ..config.elevenlabs.text_to_speech_file import text_to_speech_file
+from ..config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from ..database.session import get_db
 from ..services import voice_service, chat_service
 
-from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList
-
+from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreate
 
 router = APIRouter(
     prefix="/voices",
@@ -40,12 +44,14 @@ def read_voice(voice_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     return voice
 
+
 @router.delete("/{voice_id}")
 def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.hard_delete_voice(db, voice_id=voice_id)
+
 
 @router.put("/{voice_id}")
 def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
@@ -61,8 +67,25 @@ def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
     }
 
 
+# tts 생성 테스트
+@router.post("/tts/file")
+def create_tts_file(req: VoiceCreate):
+    file_path = text_to_speech_file(req.content)
+    return FileResponse(file_path, media_type='audio/mpeg', filename=file_path.split("/")[-1])
+
+
+@router.post("/tts/stream")
+def create_tts_stream(req: VoiceCreate):
+    audio_stream = text_to_speech_stream(req.content)
+    return StreamingResponse(content=audio_stream, media_type="audio/mpeg")
 
 
 
-
-
+# @router.websocket("/ws/text-to-speech")
+# async def websocket_endpoint(websocket: WebSocket):
+#     await websocket.accept()
+#
+#     text = await websocket.receive_text()
+#
+#     async for chunk in text_to_speech_stream(text):
+#         await websocket.send_bytes(chunk)

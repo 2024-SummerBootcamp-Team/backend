@@ -42,3 +42,4 @@ def soft_delete_voice(db: Session, voice_id: int) -> None:
     if voice:
         voice.is_deleted = True
         db.commit()
+        
