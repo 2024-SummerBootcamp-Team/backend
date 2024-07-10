@@ -48,3 +48,10 @@ def soft_delete_voice(db: Session, voice_id: int) -> None:
 
 def get_voice_from_redis(key: str):
     return redis_client.get(key)
+
+def create_voice_room(db: Session, bubble_id: int,audio_url: str):
+    voice = Voice(bubble_id = bubble_id, content=" ",audio_url=audio_url)
+    db.add(voice)
+    db.commit()
+    db.refresh(voice)
+    return voice

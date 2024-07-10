@@ -50,3 +50,5 @@ def create_image_room(db: Session, bubble_id: int, content: str,  image_url: str
     db.commit()
     db.refresh(image)
     return image
+
+
