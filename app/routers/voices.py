@@ -67,20 +67,21 @@ def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
     }
 
 
-# tts 생성 테스트
-@router.post("/tts/file")
-def create_tts_file(req: VoiceCreateRequest):
-    file_path = text_to_speech_file(req.content)
-    return FileResponse(file_path, media_type='audio/mpeg', filename=file_path.split("/")[-1])
+# # tts 생성 테스트 - file (임시)
+# @router.post("/tts/file")
+# def create_tts_file(req: VoiceCreateRequest):
+#     file_path = text_to_speech_file(req.content)
+#     return FileResponse(file_path, media_type='audio/mpeg', filename=file_path.split("/")[-1])
 
 
+# tts 생성 테스트 - stream (임시)
 @router.post("/tts/stream")
 def create_tts_stream(req: VoiceCreateRequest):
     audio_stream = text_to_speech_stream(req.content)
     return StreamingResponse(content=audio_stream, media_type="audio/mpeg")
 
 
-
+# # tts 생성 테스트 - websocket 연결 후 스트리밍 (임시)
 # @router.websocket("/ws/text-to-speech")
 # async def websocket_endpoint(websocket: WebSocket):
 #     await websocket.accept()
@@ -88,4 +89,5 @@ def create_tts_stream(req: VoiceCreateRequest):
 #     text = await websocket.receive_text()
 #
 #     async for chunk in text_to_speech_stream(text):
+#         print(chunk)
 #         await websocket.send_bytes(chunk)

@@ -25,3 +25,6 @@ venv
 
 # macOS
 .DS_Store
+
+# tts
+*.mp3

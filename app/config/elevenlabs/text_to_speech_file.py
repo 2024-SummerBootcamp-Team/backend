@@ -9,20 +9,6 @@ client = ElevenLabs()
 
 
 def text_to_speech_file(text: str) -> str:
-    """
-    TTS 생성과 동시에 파일 저장이 됩니다.
-    Converts text to speech and saves the output as an MP3 file.
-
-    This function uses a specific client for text-to-speech conversion. It configures
-    various parameters for the voice output and saves the resulting audio stream to an
-    MP3 file with a unique name.
-
-    Args:
-        text (str): The text content to convert to speech.
-
-    Returns:
-        str: The file path where the audio file has been saved.
-    """
     # Calling the text_to_speech conversion API with detailed parameters
     response = client.text_to_speech.convert(
         # voice_id="pNInz6obpgDQGcFmaJgB",  # Adam pre-made voice

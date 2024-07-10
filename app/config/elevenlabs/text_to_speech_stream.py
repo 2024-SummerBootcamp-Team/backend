@@ -1,4 +1,3 @@
-import os
 from io import BytesIO
 from typing import IO, Generator
 
@@ -10,19 +9,6 @@ client = ElevenLabs()
 
 def text_to_speech_stream(text: str) -> IO[bytes]:
 # async def text_to_speech_stream(text: str) -> Generator[bytes, None, None]:
-    """
-    Converts text to speech and returns the audio data as a byte stream.
-
-    This function invokes a text-to-speech conversion API with specified parameters, including
-    voice ID and various voice settings, to generate speech from the provided text. Instead of
-    saving the output to a file, it streams the audio data into a BytesIO object.
-
-    Args:
-        text (str): The text content to be converted into speech.
-
-    Returns:
-        IO[bytes]: A BytesIO stream containing the audio data.
-    """
     # Perform the text-to-speech conversion
     response = client.text_to_speech.convert(
         # voice_id="pNInz6obpgDQGcFmaJgB",  # Adam pre-made voice
@@ -49,6 +35,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
     for chunk in response:
         if chunk:
             audio_stream.write(chunk)
+            # time.sleep(1)  # 각 청크 전송 전에 1초 대기
 
     # Reset stream position to the beginning
     audio_stream.seek(0)
@@ -57,9 +44,12 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
     return audio_stream
 
 
-    # # Yield each chunk of audio data 웹소켓 연결을 위한
+    # # Yield each chunk of audio data - 웹소켓 연결
     # for chunk in response:
+    #     # await asyncio.sleep(1)
     #     yield chunk
+
+
 
 
 if __name__ == "__main__":
