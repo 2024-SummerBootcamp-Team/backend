@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
-
 from app.models import Bubble
 from app.models.image import Image
 from app.schemas.image import ImageDetail
-
+from app.models.image import Image as ImageModel
 
 # 저장된 모든 발췌 이미지 목록 조회
 def get_images(db: Session, skip: int = 0, limit: int = 100):
@@ -43,3 +42,11 @@ def soft_delete_image(db: Session, image_id: int) -> None:
     if image:
         image.is_deleted = True
         db.commit()
+
+#발췌 이미지 생성
+def create_image_room(db: Session, bubble_id: int, content: str,  image_url: str):
+    image = ImageModel(bubble_id = bubble_id, content=content, image_url=image_url)
+    db.add(image)
+    db.commit()
+    db.refresh(image)
+    return image
