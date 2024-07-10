@@ -22,6 +22,7 @@ router = APIRouter(
 )
 
 
+# 저장한 모든 목소리 목록 조회
 @router.get("", response_model=ResultResponseModel)
 def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     voices = voice_service.get_voices(db, skip=skip, limit=limit)
@@ -86,6 +87,7 @@ def create_tts_stream(req: VoiceCreateRequest):
 #         await websocket.send_bytes(chunk)
 
 
+# 버블아이디에 대한 tts 생성, 레디스 저장
 @router.post("/redis/{bubble_id}")  # 버블아이디에 대한 tts 생성하고 그걸 레디스에 저장하는것
 async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
     bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
@@ -103,6 +105,7 @@ async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
     return ResultResponseModel(code=200, message="목소리가 Redis에 임시저장되었습니다.", data={"key": audio_key})
 
 
+# audio_key로 레디스에서 데이터 찾기
 @router.get("/audio/{audio_key}")
 def get_tts(audio_key: str):
     try:
