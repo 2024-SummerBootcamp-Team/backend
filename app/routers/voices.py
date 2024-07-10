@@ -1,16 +1,19 @@
 # from typing import List
-
+from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.responses import FileResponse, StreamingResponse
 from starlette.websockets import WebSocket
+import io
 
 from ..config.elevenlabs.text_to_speech_file import text_to_speech_file
 from ..config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from ..database.session import get_db
-from ..services import voice_service, chat_service
+from ..services import voice_service, chat_service, bubble_service
+from ..config.redis.config import Config
 
 from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreateRequest
+import uuid
 
 router = APIRouter(
     prefix="/voices",
@@ -91,3 +94,50 @@ def create_tts_stream(req: VoiceCreateRequest):
 #     async for chunk in text_to_speech_stream(text):
 #         print(chunk)
 #         await websocket.send_bytes(chunk)
+
+
+
+
+@router.post("/redis/{bubble_id}")  # 버블아이디에 대한 tts 생성하고 그걸 레디스에 저장하는것
+async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
+    bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
+
+    if not bubble:
+        raise HTTPException(status_code=404, detail="버블아이디 없음")
+
+        # TTS 생성
+    audio_data = text_to_speech_stream(bubble.content)
+
+    # Redis에 저장할 고유 키 생성
+    audio_key = f"bubble{bubble_id}"
+
+
+    audio_data_bytes = audio_data.getvalue()  # getvalue() 메서드는 BytesIO 객체에서 현재까지 읽은 데이터를 바이트열(bytes)로 반환
+    redis_client = Config.get_redis_client()
+    # Redis에 오디오 데이터 저장
+    redis_client.setex(audio_key, timedelta(seconds=600), audio_data_bytes) #생성과 동시에 10초뒤에 사라짐
+
+    return {"message": "TTS 오디오가 Redis에 저장되었습니다.", "key": audio_key}
+
+
+
+
+@router.get("/audio/{audio_key}")
+def get_tts(audio_key: str):
+
+    try:
+        audio_data = voice_service.get_voice_from_redis(audio_key)
+
+
+        if audio_data is None:
+            raise HTTPException(status_code=404, detail="해당 키로 데이터를 찾을 수 없습니다.")
+
+
+        audio_stream = io.BytesIO(audio_data)
+
+        return StreamingResponse(audio_stream, media_type="audio/mpeg")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"TTS 데이터를 가져오는데 실패했습니다: {str(e)}")
+
+# Post 임시저장되어있는 레디스의 키값 (말풍선 번호) 을 선택하면 그 데이터를 s3에 저장하면 url이나오고 url을 mysql에 저장
