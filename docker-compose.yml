@@ -1,21 +1,16 @@
+version: '3.8'
+
 services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
 
   fastapi-server:
     build: app/
     container_name: fastapi-server
+    ports:
+      - "8000:8000"
     volumes:
       - ~/.aws:/root/.aws
-    ports:
-      - 8000:8000
-    develop:
-      watch:
-        - action: sync
-          path: app/
-          target: app/
-          ignore:
-            - venv/
-            - __pycache__/
-        - action: rebuild
-          path: app/requirements.txt
-          target: app/
-      restart: always
+    restart: always
