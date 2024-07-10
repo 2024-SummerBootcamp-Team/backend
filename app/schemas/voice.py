@@ -40,3 +40,12 @@ class VoiceDetailList(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# tts 생성 테스트
+class VoiceCreateRequest(BaseModel):
+    bubble_id: int
+    content: str
+
+    class Config:
+        from_attributes = True
