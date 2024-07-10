@@ -5,12 +5,14 @@ from sqlalchemy.orm import Session
 from starlette.responses import FileResponse, StreamingResponse
 from starlette.websockets import WebSocket
 import io
+from io import BytesIO
 
 from ..config.elevenlabs.text_to_speech_file import text_to_speech_file
 from ..config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from ..database.session import get_db
 from ..services import voice_service, chat_service, bubble_service
 from ..config.redis.config import Config
+from app.config.aws.s3Client import upload_voice
 
 from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreateRequest
 import uuid
@@ -109,7 +111,7 @@ async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
     audio_data = text_to_speech_stream(bubble.content)
 
     # Redis에 저장할 고유 키 생성
-    audio_key = f"bubble{bubble_id}"
+    audio_key = f"{bubble_id}"
 
 
     audio_data_bytes = audio_data.getvalue()  # getvalue() 메서드는 BytesIO 객체에서 현재까지 읽은 데이터를 바이트열(bytes)로 반환
@@ -141,3 +143,36 @@ def get_tts(audio_key: str):
         raise HTTPException(status_code=500, detail=f"TTS 데이터를 가져오는데 실패했습니다: {str(e)}")
 
 # Post 임시저장되어있는 레디스의 키값 (말풍선 번호) 을 선택하면 그 데이터를 s3에 저장하면 url이나오고 url을 mysql에 저장
+
+@router.post("/{bubble_id}")
+async def save_voice(bubble_id: int, db: Session = Depends(get_db)):
+    bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
+    if not bubble:
+        raise HTTPException(status_code=404, detail="버블아이디 없음")
+
+    audio_key = f"{bubble_id}"
+    audio_data = voice_service.get_voice_from_redis(audio_key)
+    if not audio_data:
+        raise HTTPException(status_code=404, detail="Redis에 음성 데이터 없음")
+
+    try:
+        file = BytesIO(audio_data)
+        audio_url = await upload_voice(file)
+        print(audio_url)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="실패")
+
+    voice = voice_service.create_voice_room(db, bubble_id=bubble_id, audio_url=audio_url)
+
+    return voice
+
+
+
+
+
+
+
+
+
+
