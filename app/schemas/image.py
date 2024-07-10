@@ -1,18 +1,19 @@
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from datetime import datetime
 
 
 class ImageBase(BaseModel):
-    id : int
-    bubble_id : int
+    id: int
+    bubble_id: int
     image_url: str
     content: str
     created_at: datetime
 
     class Config:
         from_attributes = True
+
 
 class ImageBaseList(BaseModel):
     images: List[ImageBase]
@@ -36,23 +37,6 @@ class ImageDetail(BaseModel):
 
 class ImageDetailList(BaseModel):
     images: List[ImageDetail]
-
-    class Config:
-        from_attributes = True
-
-#발췌 이미지 생성
-class ImageRoomBase(BaseModel):
-    id: int
-    bubble_id: int
-    image_url: str
-    content: str
-    created_at: datetime
-
-    class config:
-        from_attributes = True
-
-class ImageCreateRequest(BaseModel):
-    content: str
 
     class Config:
         from_attributes = True
