@@ -10,14 +10,18 @@ def get_bubble(db: Session, bubble_id: int):
 
 
 async def create_bubble(chat_id: int, content: str, db: Session):
-    db_bubble = Bubble(chat_id=chat_id, content=f'{chat_id}')
-    db.add(db_bubble)
-    db.commit()
-    db.refresh(db_bubble)
+    db_bubble_human = Bubble(chat_id=chat_id, writer=1, content=content)
+    db.add(db_bubble_human)
+
+    ai_message = ""
 
     async for chunk in runnable_with_history.astream(
         [HumanMessage(content=content)],
         config={"configurable": {"session_id": str(chat_id)}}
     ):
+        ai_message += chunk.content
         yield f'data: {chunk.content}\n\n'
 
+    db_bubble_ai = Bubble(chat_id=chat_id, writer=0, content=ai_message)
+    db.add(db_bubble_ai)
+    db.commit()

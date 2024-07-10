@@ -66,7 +66,7 @@ async def create_image_room (bubble_id: int, content: str = Form(...), file: Upl
         raise HTTPException(status_code=404, detail="대화 정보를 불러오는데 실패했습니다.")
 
     try:
-        image_url = await upload_image(file)
+        image_url = await upload_image(file, file.content_type.split('/')[1])
     except Exception as e:
         raise HTTPException(status_code=500, detail="S3에 이미지 업로드 실패: {str(e)}")
 
