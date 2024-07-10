@@ -1,12 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
+from typing import Annotated
+
+from langchain_core.messages import HumanMessage
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+
+from ..config.langChain.langChainSetting import runnable_with_history
 from ..schemas.chat import ChatRoomBase
 from ..services import chat_service
 from ..database.session import get_db
 from ..schemas.bubble import ChatBubbleList
 from ..schemas.chat import ChatCreateResponse, ChatCreateRequest, ChatId
 from ..services import character_service
+from ..services import bubble_service
+from fastapi.responses import StreamingResponse
 
 router = APIRouter(
     prefix="/chats",
@@ -59,3 +66,11 @@ def create_chat_room(req: ChatCreateRequest, db: Session = Depends(get_db)):
                               message="채팅방을 생성했습니다.",
                               data=ChatId(chat_id=db_chat.id)
                               )
+
+@router.post("/{chat_id}")
+async def creat_chat_bubble(chat_id: int,
+                      content: Annotated[str, Form()],
+                      db: Session = Depends(get_db)):
+
+    return StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=content), media_type="text/event-stream")
+

@@ -15,9 +15,15 @@ UUID는 범용 고유 식별자로, 128비트의 수이다.
 
 
 # 이미지 전송 함수
-async def upload_image(file):
+async def upload_image(file, image_type: str = 'jpeg'):  # 이미지 파일을 업로드하는 함수
+    """
+    이미지 파일을 업로드하는 함수
+    :param file: 파일의 객체
+    :param image_type: 파일의 확장자
+    :return: 이미지 URL
+    """
     bucket_name = "teamh-bucket"
-    object_name = "images/" + str(uuid.uuid4()) + ".webp"  # 업로드할 객체명, /를 사용하면 폴더 안에 넣을 수 있다
+    object_name = f"images/{str(uuid.uuid4())}.{image_type}"  # 업로드할 객체명, /를 사용하면 폴더 안에 넣을 수 있다
 
     # Create an S3 client
     session = aioboto3.Session()
@@ -30,7 +36,7 @@ async def upload_image(file):
             )
         except ClientError as e:
             logging.error(e)
-            raise HTTPException(status_code=500, detail="S3에 이미지 업로드 실패: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"S3에 이미지 업로드 실패: {str(e)}")
 
     """
     이미지 업로드 성공시 이미지 URL을 반환한다.
@@ -47,6 +53,11 @@ async def upload_image(file):
 
 
 async def upload_voice(file):
+    """
+    음성 파일을 업로드하는 함수
+    :param file: 파일의 객체
+    :return: 음성 URL
+    """
     bucket_name = "teamh-bucket"
     object_name = "voices/" + str(uuid.uuid4()) + ".mp3"  # 업로드할 객체명, /를 사용하면 폴더 안에 넣을 수 있다
 
@@ -61,7 +72,7 @@ async def upload_voice(file):
             )
         except ClientError as e:
             logging.error(e)
-            raise HTTPException(status_code=500, detail="S3에 이미지 업로드 실패: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"S3에 이미지 업로드 실패: {str(e)}")
 
     """
     음성파일 업로드 성공시 이미지 URL을 반환한다.
