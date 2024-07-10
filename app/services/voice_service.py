@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from app.models.bubble import Bubble
 from app.models.voice import Voice
 from app.schemas.voice import VoiceDetail
+from app.config.redis.config import Config
+
+redis_client = Config.get_redis_client()
 
 
 # 저장된 모든 목소리 목록 조회
@@ -42,4 +45,6 @@ def soft_delete_voice(db: Session, voice_id: int) -> None:
     if voice:
         voice.is_deleted = True
         db.commit()
-        
+
+def get_voice_from_redis(key: str):
+    return redis_client.get(key)

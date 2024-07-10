@@ -73,3 +73,4 @@ async def create_image_room (bubble_id: int, content: str = Form(...), file: Upl
     image = image_service.create_image_room(db, bubble_id=bubble_id, content=content, image_url=image_url)
 
     return image
+
