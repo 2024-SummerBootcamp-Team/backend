@@ -124,10 +124,10 @@ async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
 
 @router.get("/audio/{audio_key}")
 def get_tts(audio_key: str):
-    print(audio_key)
+
     try:
         audio_data = voice_service.get_voice_from_redis(audio_key)
-        print(audio_data)
+
 
         if audio_data is None:
             raise HTTPException(status_code=404, detail="해당 키로 데이터를 찾을 수 없습니다.")

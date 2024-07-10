@@ -1,7 +1,7 @@
 import redis
 
 class Config:
-    REDIS_HOST = 'localhost'
+    REDIS_HOST = 'redis'
     REDIS_PORT = 6379
     REDIS_PASSWORD = None
     REDIS_DB = 0
