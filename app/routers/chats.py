@@ -16,6 +16,7 @@ from ..services import character_service
 from ..services import bubble_service
 from fastapi.responses import StreamingResponse
 
+
 router = APIRouter(
     prefix="/chats",
     tags=["chats"],
@@ -39,7 +40,7 @@ def read_bubbles_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
     bubbles = chat_service.get_bubbles(db, chat_id=chat_id)
-    return ResultResponseModel(code=200, message="채팅방 전체 내용을 조회했습니다.", data=ChatBubbleList(bubbles=bubbles))
+    return ResultResponseModel(code=200, message="채팅방 전체 내용을 조회했습니다.", data=bubbles)
 
 
 # 채팅방 생성
