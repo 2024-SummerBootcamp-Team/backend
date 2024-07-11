@@ -49,10 +49,10 @@ def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
     character = character_service.get_character_id_by_name(db, character_name=req.character_name)
     if not character:
         raise HTTPException(status_code=404, detail="캐릭터 정보를 찾을 수 없습니다.")
-    chat = chat_service.create_chat_room(db, chat_name=req.chat_name, character_id=character.id)
+    chat = chat_service.create_chat_room(db, chat_name=req.chat_room_name, character_id=character.id)
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 생성에 실패했습니다.")
-    return ResultResponseModel(code=200, message="채팅방을 생성했습니다.", data=ChatRoomBase.from_orm(chat))
+    return ResultResponseModel(code=200, message="채팅방을 생성했습니다.", data={"chat_id": chat.id})
 
 
 # 채팅하기: ai 답변 요청
