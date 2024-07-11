@@ -1,5 +1,30 @@
-migrations/*
-alembic.ini
-.idea
+# gitignore 파일 무시할 내용을 작성하는 파일
 
-.backend.env
+# 마이그레이션
+migrations/
+alembic.ini
+test.db
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache
+
+# PyCharm
+.idea
+*.iml
+*.ipr
+
+# 가상환경 무시
+.venv
+venv
+
+# Environment
+.env
+
+# macOS
+.DS_Store
+
+# tts
+*.mp3

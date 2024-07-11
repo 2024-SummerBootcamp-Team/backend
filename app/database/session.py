@@ -1,14 +1,22 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-SQLALCHEMY_DATABASE_URL = 'sqlite:///./test.db'
+DATABASE_URL = os.environ.get('DATABASE_URL')
+DATABASE_USERNAME = os.environ.get('DATABASE_USERNAME')
+DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD')
+DATABASE_PORT = os.environ.get('DATABASE_PORT')
+DATABASE_DBNAME = os.environ.get('DATABASE_DBNAME')
+
+
+SQLALCHEMY_DATABASE_URL = f'mysql+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_URL}:{DATABASE_PORT}/{DATABASE_DBNAME}'
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False,
-                  "connect_timeout": 10},
+    connect_args={"connect_timeout": 10},
+
     pool_size=20,          # 기본 풀 크기
     max_overflow=40,       # 최대 오버플로우 수
     pool_timeout=30,       # 풀에서 커넥션을 가져오기 위해 대기하는 최대 시간(초)
@@ -27,3 +35,5 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
