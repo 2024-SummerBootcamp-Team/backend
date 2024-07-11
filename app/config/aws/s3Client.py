@@ -66,7 +66,7 @@ async def upload_voice(file):
     async with session.client('s3') as s3_client:
         try:
             await s3_client.upload_fileobj(
-                file.file,
+                file,
                 bucket_name,
                 object_name
             )
