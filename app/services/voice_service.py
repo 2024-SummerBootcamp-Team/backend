@@ -11,7 +11,7 @@ redis_client = Config.get_redis_client()
 # 저장된 모든 목소리 목록 조회
 def get_voices(db: Session, skip: int = 0, limit: int = 100):
     voices = db.query(Voice).filter(Voice.is_deleted == False).offset(skip).limit(limit).all()
-    voice_details = [VoiceDetail(
+    return [VoiceDetail(
         id=voice.id,
         chat_id=voice.bubble.chat_id,
         character=voice.bubble.chat.character.name,
@@ -20,7 +20,6 @@ def get_voices(db: Session, skip: int = 0, limit: int = 100):
         content=voice.content,
         created_at=voice.created_at
     ) for voice in voices]
-    return voice_details
 
 
 # 채팅방 별 목소리 목록 조회

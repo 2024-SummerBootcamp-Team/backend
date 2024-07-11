@@ -9,11 +9,8 @@ from ..config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from ..database.session import get_db
 from ..services import voice_service, chat_service, bubble_service
 from ..config.redis.config import Config
-
 from ..schemas.response import ResultResponseModel
-from ..services import voice_service, chat_service
-
-from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreateRequest
+from ..schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreateRequest
 
 router = APIRouter(
     prefix="/voices",
@@ -31,7 +28,7 @@ def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
 
 # 채팅방 별 저장한 목소리 목록 조회
 @router.get("/chat/{chat_id}", response_model=ResultResponseModel)
-def read_voices_by_chat(chat_id: int, db: Session = Depends(get_db)):
+def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat_room = chat_service.get_chat_room(db, chat_room_id=chat_id)
     if not chat_room:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
