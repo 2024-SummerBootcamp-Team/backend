@@ -10,7 +10,7 @@ from ..schemas.chat import ChatRoomBase
 from ..schemas.response import ResultResponseModel
 from ..services import chat_service
 from ..database.session import get_db
-from ..schemas.bubble import ChatBubbleList
+from ..schemas.bubble import ChatBubbleList, BubbleRequest
 from ..schemas.chat import ChatRoomCreateRequest
 from ..services import character_service
 from ..services import bubble_service
@@ -57,6 +57,6 @@ def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
 
 # 채팅하기: ai 답변 요청
 @router.post("/{chat_id}")
-async def create_bubble(chat_id: int, content: Annotated[str, Form()], db: Session = Depends(get_db)):
-    return StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=content), media_type="text/event-stream")
+async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(get_db)):
+    return StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content), media_type="text/event-stream")
 
