@@ -97,7 +97,7 @@ async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
     # TTS 생성
     audio_data = text_to_speech_stream(bubble.content)
     # Redis에 저장할 고유 키 생성
-    audio_key = f"bubble{bubble_id}"
+    audio_key = f"{bubble_id}"
     # getvalue() 메서드는 BytesIO 객체에서 현재까지 읽은 데이터를 바이트열(bytes)로 반환
     audio_data_bytes = audio_data.getvalue()
     redis_client = Config.get_redis_client()
