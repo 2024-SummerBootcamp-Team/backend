@@ -8,8 +8,8 @@ from app.models.bubble import Bubble
 
 
 # 채팅방 정보 조회
-def get_chat_room(db: Session, chat_room_id: int):
-    chat = db.query(Chat).filter(Chat.id == chat_room_id, Chat.is_deleted == False).first()
+def get_chat_room(db: Session, chat_id: int):
+    chat = db.query(Chat).filter(Chat.id == chat_id, Chat.is_deleted == False).first()
     return ChatRoomBase(
         id=chat.id,
         character_id=chat.character_id,

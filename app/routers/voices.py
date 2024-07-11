@@ -33,7 +33,7 @@ def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
 # 채팅방 별 저장한 목소리 목록 조회
 @router.get("/chat/{chat_id}", response_model=ResultResponseModel)
 def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
-    chat_room = chat_service.get_chat_room(db, chat_room_id=chat_id)
+    chat_room = chat_service.get_chat_room(db, chat_id=chat_id)
     if not chat_room:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
     voices = voice_service.get_voices_by_chat_id(db, chat_id=chat_id)
@@ -134,7 +134,6 @@ async def save_voice(bubble_id: int, db: Session = Depends(get_db)):
     try:
         file = BytesIO(audio_data)
         audio_url = await upload_voice(file)
-        print(audio_url)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="실패")

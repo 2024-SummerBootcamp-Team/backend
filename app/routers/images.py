@@ -24,7 +24,7 @@ def read_images(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
 # 채팅방 별 저장한 발췌 이미지 목록 조회
 @router.get("/chat/{chat_id}", response_model=ResultResponseModel)
 def read_images_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
-    chat_room = chat_service.get_chat_room(db, chat_room_id=chat_id)
+    chat_room = chat_service.get_chat_room(db, chat_id=chat_id)
     if not chat_room:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
     images = image_service.get_images_by_chat_id(db, chat_id=chat_id)
