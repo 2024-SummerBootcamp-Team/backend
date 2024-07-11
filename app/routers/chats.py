@@ -35,11 +35,11 @@ def read_chat_room(chat_id: int, db: Session = Depends(get_db)):
 
 # 전체 채팅 내용 조회
 @router.get("/{chat_id}/bubbles", response_model=ResultResponseModel)
-def read_bubbles_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
-    chat = chat_service.get_chat_room(db, chat_room_id=chat_id)
+def read_bubbles_in_chat_room(chat_id: int, db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    chat = chat_service.get_chat_room(db, chat_room_id=chat_id,)
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
-    bubbles = chat_service.get_bubbles(db, chat_id=chat_id)
+    bubbles = chat_service.get_bubbles(db, chat_id=chat_id,skip=skip, limit=limit)
     return ResultResponseModel(code=200, message="채팅방 전체 내용을 조회했습니다.", data=bubbles)
 
 

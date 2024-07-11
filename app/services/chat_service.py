@@ -20,8 +20,8 @@ def get_chat_room(db: Session, chat_room_id: int):
 
 
 # 전체 채팅 내용 조회
-def get_bubbles(db: Session, chat_id: int):
-    bubbles = db.query(Bubble).filter(Bubble.chat_id == chat_id).all()
+def get_bubbles(db: Session, chat_id: int,skip: int = 0, limit: int = 100):
+    bubbles = db.query(Bubble).filter(Bubble.chat_id == chat_id).offset(skip).limit(limit).all()
     return ChatBubbleList(
         bubbles=[
             ChatBubble(
