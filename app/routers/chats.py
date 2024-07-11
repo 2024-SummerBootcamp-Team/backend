@@ -30,7 +30,7 @@ def read_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat = chat_service.get_chat_room(db, chat_room_id=chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
-    return ResultResponseModel(code=200, message="채팅방 정보를 조회했습니다.", data=ChatRoomBase.from_orm(chat))
+    return ResultResponseModel(code=200, message="채팅방 정보를 조회했습니다.", data=chat)
 
 
 # 전체 채팅 내용 조회
@@ -46,7 +46,7 @@ def read_bubbles_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
 # 채팅방 생성
 @router.post("", response_model=ResultResponseModel)
 def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
-    character = character_service.get_character_id_by_name(db, character_name=req.character_name)
+    character = character_service.get_character_by_name(db, character_name=req.character_name)
     if not character:
         raise HTTPException(status_code=404, detail="캐릭터 정보를 찾을 수 없습니다.")
     chat = chat_service.create_chat_room(db, chat_name=req.chat_room_name, character_id=character.id)
