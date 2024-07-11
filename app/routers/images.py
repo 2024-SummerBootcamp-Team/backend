@@ -37,7 +37,7 @@ def read_image(image_id: int, db: Session = Depends(get_db)):
     image = image_service.get_image(db, image_id=image_id)
     if not image:
         raise HTTPException(status_code=404, detail="발췌 이미지 정보를 불러오는데 실패했습니다.")
-    return ResultResponseModel(code=200, message="저장된 모든 발췌 이미지 상세 정보를 조회했습니다.", data=ImageBase.from_orm(image))
+    return ResultResponseModel(code=200, message="발췌 이미지 상세 정보를 조회했습니다.", data=ImageBase.from_orm(image))
 
 
 # 저장한 발췌 이미지 하드 삭제
