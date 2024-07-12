@@ -7,13 +7,15 @@ from sqlalchemy.orm import Session
 
 from ..config.langChain.langChainSetting import runnable_with_history
 from ..schemas.chat import ChatRoomBase
+from ..schemas.response import ResultResponseModel
 from ..services import chat_service
 from ..database.session import get_db
-from ..schemas.bubble import ChatBubbleList
-from ..schemas.chat import ChatCreateResponse, ChatCreateRequest, ChatId
+from ..schemas.bubble import ChatBubbleList, BubbleRequest
+from ..schemas.chat import ChatRoomCreateRequest
 from ..services import character_service
 from ..services import bubble_service
 from fastapi.responses import StreamingResponse
+
 
 router = APIRouter(
     prefix="/chats",
@@ -22,55 +24,39 @@ router = APIRouter(
 )
 
 
-@router.get("/{chat_id}", response_model=ChatRoomBase)
+# 채팅방 정보 조회
+@router.get("/{chat_id}", response_model=ResultResponseModel)
 def read_chat_room(chat_id: int, db: Session = Depends(get_db)):
-    chat_room = chat_service.get_chat_room(db, chat_room_id=chat_id)
-    if not chat_room:
+    chat = chat_service.get_chat_room(db, chat_id=chat_id)
+    if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
+    return ResultResponseModel(code=200, message="채팅방 정보를 조회했습니다.", data=chat)
 
-    return chat_room
 
-
-@router.get("/{chat_id}/bubbles", response_model=ChatBubbleList)
-def read_chat_bubble(chat_id: int, db: Session = Depends(get_db)):
-    chat_room = chat_service.get_chat_room(db, chat_room_id=chat_id)
-    if not chat_room:
+# 전체 채팅 내용 조회
+@router.get("/{chat_id}/bubbles", response_model=ResultResponseModel)
+def read_bubbles_in_chat_room(chat_id: int, db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    chat = chat_service.get_chat_room(db, chat_id=chat_id, )
+    if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
-    chat_bubble = chat_service.get_bubbles(db, chat_id=chat_id)
-
-    return chat_bubble
-
+    bubbles = chat_service.get_bubbles(db, chat_id=chat_id,skip=skip, limit=limit)
+    return ResultResponseModel(code=200, message="채팅방 전체 내용을 조회했습니다.", data=bubbles)
 
 
-
-@router.post("", response_model=ChatCreateResponse)
-def create_chat_room(req: ChatCreateRequest, db: Session = Depends(get_db)):
-    vaild_character_name = character_service.validate_character_name(db, character_name=req.character_name)
-
-    if not vaild_character_name:
-        raise HTTPException(status_code=404, detail="캐릭터 이름 정보를 찾을 수 없습니다.")
-
-    character_id = character_service.get_character_id_by_name(db,
-                                                              character_name=req.character_name
-                                                              )
-
-    db_chat = chat_service.create_chat_room(db,
-                                            chat_name=req.chat_name,
-                                            character_id=character_id
-                                            )
-
-    if not db_chat:
+# 채팅방 생성
+@router.post("", response_model=ResultResponseModel)
+def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
+    character = character_service.get_character_by_name(db, character_name=req.character_name)
+    if not character:
+        raise HTTPException(status_code=404, detail="캐릭터 정보를 찾을 수 없습니다.")
+    chat = chat_service.create_chat_room(db, chat_name=req.chat_room_name, character_id=character.id)
+    if not chat:
         raise HTTPException(status_code=404, detail="채팅방 생성에 실패했습니다.")
+    return ResultResponseModel(code=200, message="채팅방을 생성했습니다.", data={"chat_id": chat.id})
 
-    return ChatCreateResponse(status_code=200,
-                              message="채팅방을 생성했습니다.",
-                              data=ChatId(chat_id=db_chat.id)
-                              )
 
+# 채팅하기: ai 답변 요청
 @router.post("/{chat_id}")
-async def creat_chat_bubble(chat_id: int,
-                      content: Annotated[str, Form()],
-                      db: Session = Depends(get_db)):
-
-    return StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=content), media_type="text/event-stream")
+async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(get_db)):
+    return StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content), media_type="text/event-stream")
 
