@@ -1,11 +1,12 @@
 from io import BytesIO
-from typing import IO, Generator
+from typing import IO, Generator, Iterator, AsyncIterator
 
 from elevenlabs import VoiceSettings
-from elevenlabs.client import ElevenLabs
+from elevenlabs.client import ElevenLabs, AsyncElevenLabs
 
 client = ElevenLabs()
 
+async_client = AsyncElevenLabs()
 
 def text_to_speech_stream(text: str) -> IO[bytes]:
 # async def text_to_speech_stream(text: str) -> Generator[bytes, None, None]:
@@ -49,6 +50,24 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
     #     # await asyncio.sleep(1)
     #     yield chunk
 
+
+async def tts_stream(text: str) -> AsyncIterator[bytes]:
+    response = async_client.text_to_speech.convert(
+        voice_id="Es5AnE58gKPS9Vffyooe",
+        optimize_streaming_latency="0",
+        output_format="mp3_22050_32",
+        text=text,
+        model_id="eleven_multilingual_v2",
+        voice_settings=VoiceSettings(
+            stability=0.5,
+            similarity_boost=0.75,
+            style=0.0,
+            use_speaker_boost=True,
+        ),
+    )
+
+    async for chunk in response:
+        yield chunk
 
 
 

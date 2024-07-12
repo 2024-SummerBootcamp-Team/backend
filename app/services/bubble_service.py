@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.config.langChain.langChainSetting import runnable_with_history
 from app.models import Bubble
 
+from app.config.elevenlabs.text_to_speech_stream import tts_stream
+
 
 # 채팅 내용 조회
 def get_bubble(db: Session, bubble_id: int):
@@ -16,13 +18,23 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     db.add(db_bubble_human)
 
     ai_message = ""
+    message_buffer = ""
 
     async for chunk in runnable_with_history.astream(
         [HumanMessage(content=content)],
         config={"configurable": {"session_id": str(chat_id)}}
     ):
         ai_message += chunk.content
-        yield f'data: {chunk.content}\n\n'
+        message_buffer += chunk.content
+
+        # 문장에 키워드 . ! ?가 있을 경우 음성으로 변환
+        if any(keyword in chunk.content for keyword in [".", "!", "?"]):
+            async for audioChunk in tts_stream(message_buffer):
+                yield f'audio: {audioChunk}\n\n'
+            print("audio: ", message_buffer)
+            message_buffer = ""
+
+        yield f'message: {chunk.content}\n\n'
 
     db_bubble_ai = Bubble(chat_id=chat_id, writer=0, content=ai_message)
     db.add(db_bubble_ai)
