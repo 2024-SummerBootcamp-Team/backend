@@ -51,7 +51,7 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
     #     yield chunk
 
 
-async def tts_stream(text: str) -> bytes:
+def tts_stream(text: str) -> AsyncIterator[bytes]:
     response = async_client.text_to_speech.convert(
         voice_id="Es5AnE58gKPS9Vffyooe",
         optimize_streaming_latency="0",
@@ -66,8 +66,8 @@ async def tts_stream(text: str) -> bytes:
         ),
     )
 
-    async for chunk in response:
-        yield chunk
+    print("Streaming audio data...")
+    return response
 
 
 

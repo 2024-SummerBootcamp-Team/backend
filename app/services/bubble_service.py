@@ -35,9 +35,9 @@ async def create_bubble(chat_id: int, content: str, db: Session):
         message_buffer += chunk.content
 
         # 문장에 키워드 . ! ?가 있을 경우 음성으로 변환
-        if any(keyword in chunk.content for keyword in [".", "!", "?"]):
+        if any(keyword in chunk.content for keyword in [".", "!", "?"]) or chunk.response_metadata:
             async for audio_chunk in tts_stream(message_buffer):
-                encoded_audio = base64.b64encode(audio_chunk).decode("utf-8")
+                encoded_audio = audio_chunk.hex()
                 yield f'data: {json.dumps({"audio": encoded_audio})}\n\n'
             message_buffer = ""
 
