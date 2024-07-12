@@ -17,7 +17,8 @@ app.add_middleware(
     allow_headers=["*"],  # 모든 헤더를 허용
 )
 
-Instrumentator().instrument(app).expose(app)
+instrumentator = Instrumentator().instrument(app)
+instrumentator.expose(app, include_in_schema=False)
 
 
 
