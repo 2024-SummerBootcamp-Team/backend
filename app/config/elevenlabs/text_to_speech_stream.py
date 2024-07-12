@@ -65,8 +65,6 @@ def tts_stream(text: str) -> AsyncIterator[bytes]:
             use_speaker_boost=True,
         ),
     )
-
-    print("Streaming audio data...")
     return response
 
 
