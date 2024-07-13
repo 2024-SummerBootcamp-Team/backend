@@ -27,7 +27,22 @@ runnable_with_history = RunnableWithMessageHistory(
     get_session_history,
 )
 
+# runnable_with_history.invoke(
+#     [HumanMessage(content="안녕하세요 저의 이름은 강남이 입니다.")],
+#     config={"configurable": {"session_id": "1"}},
+# )
+
 runnable_with_history.invoke(
-    [HumanMessage(content="안녕하세요 저의 이름은 강남이 입니다.")],
+    [HumanMessage(content="hi - im bob!")],
     config={"configurable": {"session_id": "1"}},
+)
+
+runnable_with_history.invoke(
+    [HumanMessage(content="whats my name?")],
+    config={"configurable": {"session_id": "1"}},
+)
+
+runnable_with_history.invoke(
+    [HumanMessage(content="whats my name?")],
+    config={"configurable": {"session_id": "1a"}},
 )
