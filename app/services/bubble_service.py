@@ -17,8 +17,6 @@ def get_bubble(db: Session, bubble_id: int):
     return db.query(Bubble).filter(Bubble.id == bubble_id,Bubble.is_deleted == False).first()
 
 
-
-
 # 채팅하기: ai 답변 요청
 async def create_bubble(chat_id: int, content: str, db: Session):
     db_bubble_human = Bubble(chat_id=chat_id, writer=1, content=content)
@@ -34,8 +32,8 @@ async def create_bubble(chat_id: int, content: str, db: Session):
         ai_message += chunk.content
         message_buffer += chunk.content
 
-        # 문장에 키워드 . ! ?가 있을 경우 음성으로 변환
-        if any(keyword in chunk.content for keyword in [".", "!", "?"]) or chunk.response_metadata:
+        # 문장에 키워드 . ! ?가 있을 경우 음성으로 변환, 문장 종료시, 남은 문장이 있으면 작동
+        if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (chunk.response_metadata and message_buffer.isalpha()):
             async for audio_chunk in tts_stream(message_buffer):
                 encoded_audio = audio_chunk.hex()
                 yield f'data: {json.dumps({"audio": encoded_audio})}\n\n'
