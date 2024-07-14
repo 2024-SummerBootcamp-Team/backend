@@ -1,8 +1,5 @@
 import asyncio
-import base64
 import json
-from io import BytesIO
-
 from langchain_core.messages import HumanMessage
 from sqlalchemy.orm import Session
 
@@ -71,6 +68,10 @@ async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queu
 
 # 채팅하기: ai 답변 요청
 async def create_bubble(chat_id: int, content: str, db: Session):
+    # Save the user message to the database
+    db_bubble_user = Bubble(chat_id=chat_id, writer=1, content=content)
+    db.add(db_bubble_user)
+
     response_queue = asyncio.Queue()
     loop = asyncio.get_event_loop()
     gpt_task = loop.create_task(async_gpt_stream(text=content, message_queue=response_queue, chat_id=chat_id))
