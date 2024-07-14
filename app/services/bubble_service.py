@@ -16,31 +16,56 @@ from app.config.elevenlabs.text_to_speech_stream import tts_stream
 def get_bubble(db: Session, bubble_id: int):
     return db.query(Bubble).filter(Bubble.id == bubble_id,Bubble.is_deleted == False).first()
 
-
-# 채팅하기: ai 답변 요청
-async def create_bubble(chat_id: int, content: str, db: Session):
-    db_bubble_human = Bubble(chat_id=chat_id, writer=1, content=content)
-    db.add(db_bubble_human)
-
+# This is a placeholder for the actual GPT stream generator.
+async def async_gpt_stream(text: str, queue: asyncio.Queue, chat_id: int):
     ai_message = ""
     message_buffer = ""
+    loop = asyncio.get_event_loop()
+    tts_tasks = []
 
     async for chunk in runnable_with_history.astream(
-        [HumanMessage(content=content)],
+        [HumanMessage(content=text)],
         config={"configurable": {"session_id": str(chat_id)}}
     ):
         ai_message += chunk.content
         message_buffer += chunk.content
+        await queue.put(json.dumps({"message": chunk.content}))
 
-        # 문장에 키워드 . ! ?가 있을 경우 음성으로 변환, 문장 종료시, 남은 문장이 있으면 작동
         if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (chunk.response_metadata and message_buffer.isalpha()):
-            async for audio_chunk in tts_stream(message_buffer):
-                encoded_audio = audio_chunk.hex()
-                yield f'data: {json.dumps({"audio": encoded_audio})}\n\n'
+            # 테스크를 생성하고
+            tts_tasks.append(loop.create_task(async_tts_stream(queue, message_buffer)))
             message_buffer = ""
 
-        yield f'data: {json.dumps({"message": chunk.content})}\n\n'
+    #생성한 테스크가 모두 종료되길 기다립니다.
+    await asyncio.wait(tts_tasks)
 
+    print("tts 모든 테스크 종료 후 - ", ai_message)
+    await queue.put(None)
+    return ai_message
+
+
+# This is a placeholder for the actual TTS stream generator.
+async def async_tts_stream(queue: asyncio.Queue, text: str):
+    async for audio_chunk in tts_stream(text):
+        encoded_audio = audio_chunk.hex()
+        await queue.put(json.dumps({"audio": encoded_audio}))
+    await asyncio.sleep(1)
+
+# 채팅하기: ai 답변 요청
+async def create_bubble(chat_id: int, content: str, db: Session):
+    queue = asyncio.Queue()
+    loop = asyncio.get_event_loop()
+    gpt_task = loop.create_task(async_gpt_stream(content, queue, chat_id))
+
+    while not gpt_task.done():
+        message = await queue.get()
+        if message is None:
+            break
+        yield f"data: {message}\n\n"
+
+    # Save the final AI message to the database
+    ai_message = await gpt_task
+    print("모든 테스크 종료 후 - ", ai_message)
     db_bubble_ai = Bubble(chat_id=chat_id, writer=0, content=ai_message)
     db.add(db_bubble_ai)
     db.commit()
