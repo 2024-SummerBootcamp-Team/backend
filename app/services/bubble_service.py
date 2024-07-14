@@ -44,7 +44,6 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     # 생성한 테스크가 모두 종료되길 기다립니다.
     await tts_task
 
-    print("tts 모든 테스크 종료 후 - ", ai_message)
     await message_queue.put(None)
     return ai_message
 
@@ -75,7 +74,6 @@ async def create_bubble(chat_id: int, content: str, db: Session):
 
     # Save the final AI message to the database
     ai_message = await gpt_task
-    print("모든 테스크 종료 후 - ", ai_message)
     db_bubble_ai = Bubble(chat_id=chat_id, writer=0, content=ai_message)
     db.add(db_bubble_ai)
     db.commit()
