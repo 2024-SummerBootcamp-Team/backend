@@ -14,7 +14,8 @@ from app.config.elevenlabs.text_to_speech_stream import tts_stream
 
 # 채팅 내용 조회
 def get_bubble(db: Session, bubble_id: int):
-    return db.query(Bubble).filter(Bubble.id == bubble_id,Bubble.is_deleted == False).first()
+    return db.query(Bubble).filter(Bubble.id == bubble_id, Bubble.is_deleted == False).first()
+
 
 # This is a placeholder for the actual GPT stream generator.
 async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int):
@@ -25,19 +26,22 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     tts_task = loop.create_task(async_tts_stream(message_queue, tts_queue))
 
     async for chunk in runnable_with_history.astream(
-        [HumanMessage(content=text)],
-        config={"configurable": {"session_id": str(chat_id)}}
+            [HumanMessage(content=text)],
+            config={"configurable": {"session_id": str(chat_id)}}
     ):
         ai_message += chunk.content
         message_buffer += chunk.content
         await message_queue.put(json.dumps({"message": chunk.content}))
 
-        if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (chunk.response_metadata and message_buffer.isalpha()):
+        if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (
+                chunk.response_metadata and message_buffer.isalpha()):
             # 테스크를 생성하고
             await tts_queue.put(message_buffer)
             message_buffer = ""
 
-    #생성한 테스크가 모두 종료되길 기다립니다.
+    await tts_queue.put(None)
+
+    # 생성한 테스크가 모두 종료되길 기다립니다.
     await tts_task
 
     print("tts 모든 테스크 종료 후 - ", ai_message)
@@ -54,14 +58,14 @@ async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queu
         async for audio_chunk in tts_stream(text):
             encoded_audio = audio_chunk.hex()
             await message_queue.put(json.dumps({"audio": encoded_audio}))
+    return None
 
 
 # 채팅하기: ai 답변 요청
 async def create_bubble(chat_id: int, content: str, db: Session):
     response_queue = asyncio.Queue()
     loop = asyncio.get_event_loop()
-    gpt_task = loop.create_task(async_gpt_stream(content, response_queue, chat_id))
-
+    gpt_task = loop.create_task(async_gpt_stream(text=content, message_queue=response_queue, chat_id=chat_id))
 
     while not gpt_task.done():
         message = await response_queue.get()
@@ -75,4 +79,3 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     db_bubble_ai = Bubble(chat_id=chat_id, writer=0, content=ai_message)
     db.add(db_bubble_ai)
     db.commit()
-
