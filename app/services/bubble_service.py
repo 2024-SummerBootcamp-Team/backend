@@ -25,26 +25,33 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     loop = asyncio.get_event_loop()
     tts_task = loop.create_task(async_tts_stream(message_queue, tts_queue))
 
-    async for chunk in runnable_with_history.astream(
-            [HumanMessage(content=text)],
-            config={"configurable": {"session_id": str(chat_id)}}
-    ):
-        ai_message += chunk.content
-        message_buffer += chunk.content
-        await message_queue.put(json.dumps({"message": chunk.content}))
+    try:
+        async for chunk in runnable_with_history.astream(
+                [HumanMessage(content=text)],
+                config={"configurable": {"session_id": str(chat_id)}}
+        ):
+            ai_message += chunk.content
+            message_buffer += chunk.content
+            await message_queue.put(json.dumps({"message": chunk.content}))
 
-        if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (
-                chunk.response_metadata and message_buffer.isalpha()):
-            # 테스크를 생성하고
-            await tts_queue.put(message_buffer)
-            message_buffer = ""
+            if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (
+                    chunk.response_metadata and message_buffer.isalpha()):
+                # 테스크를 생성하고
+                await tts_queue.put(message_buffer)
+                message_buffer = ""
 
-    await tts_queue.put(None)
+        await tts_queue.put(None)
 
-    # 생성한 테스크가 모두 종료되길 기다립니다.
-    await tts_task
+        # 생성한 테스크가 모두 종료되길 기다립니다.
+        await tts_task
 
-    await message_queue.put(None)
+        await message_queue.put(None)
+
+    except Exception as e:
+        await message_queue.put(json.dumps({"error": str(e)}))
+        await tts_queue.put(None)
+        ai_message = "에러가 발생했습니다."
+
     return ai_message
 
 
@@ -54,10 +61,12 @@ async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queu
         text = await tts_queue.get()
         if text is None:
             break
-        async for audio_chunk in tts_stream(text):
-            encoded_audio = audio_chunk.hex()
-            await message_queue.put(json.dumps({"audio": encoded_audio}))
-    return None
+        try:
+            async for audio_chunk in tts_stream(text):
+                encoded_audio = audio_chunk.hex()
+                await message_queue.put(json.dumps({"audio": encoded_audio}))
+        except Exception as e:
+            await message_queue.put(json.dumps({"error": str(e)}))
 
 
 # 채팅하기: ai 답변 요청
@@ -70,6 +79,9 @@ async def create_bubble(chat_id: int, content: str, db: Session):
         message = await response_queue.get()
         if message is None:
             break
+        if message.startswith('{"error":'):
+            yield f"data: {message}\n\n"
+            raise Exception(message)
         yield f"data: {message}\n\n"
 
     # Save the final AI message to the database
