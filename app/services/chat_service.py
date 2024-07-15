@@ -1,3 +1,5 @@
+from fastapi import HTTPException
+
 from app.models.chat import Chat
 from sqlalchemy.orm import Session
 from app.models.voice import Voice
@@ -7,9 +9,12 @@ from app.schemas.chat import ChatRoomBase
 from app.models.bubble import Bubble
 
 
+
 # 채팅방 정보 조회
 def get_chat_room(db: Session, chat_id: int):
     chat = db.query(Chat).filter(Chat.id == chat_id, Chat.is_deleted == False).first()
+    if not chat:
+        raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
     return ChatRoomBase(
         id=chat.id,
         character_id=chat.character_id,
