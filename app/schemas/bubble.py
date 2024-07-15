@@ -17,4 +17,8 @@ class ChatBubbleList(BaseModel):
     class Config:
         from_attributes = True
 
+class BubbleRequest(BaseModel):
+    content: str
 
+    class Config:
+        from_attributes = True
