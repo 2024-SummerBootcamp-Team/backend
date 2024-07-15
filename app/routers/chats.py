@@ -58,5 +58,9 @@ def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
 # 채팅하기: ai 답변 요청
 @router.post("/{chat_id}")
 async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(get_db)):
-    return StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content), media_type="text/event-stream")
+    try:
+        response = StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content), media_type="text/event-stream")
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=404, detail="채팅하기에 실패했습니다.")
 
