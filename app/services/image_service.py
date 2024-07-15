@@ -4,6 +4,7 @@ from app.models.image import Image
 from app.schemas.image import ImageDetail
 from app.models.image import Image as ImageModel
 
+
 # 저장된 모든 발췌 이미지 목록 조회
 def get_images(db: Session, skip: int = 0, limit: int = 100):
     images = db.query(Image).filter(Image.is_deleted == False).offset(skip).limit(limit).all()
@@ -24,12 +25,12 @@ def get_images_by_chat_id(db: Session, chat_id: int):
     return db.query(Image).join(Image.bubble).filter(Bubble.chat_id == chat_id, Image.is_deleted == False).all()
 
 
-# 발췌 이미지 상세조회
+# 발췌 이미지 상세 조회
 def get_image(db: Session, image_id: int) -> Image:
     return db.query(Image).filter(Image.id == image_id, Image.is_deleted == False).first()
 
 
-# 발췌 이미지 삭제
+# 발췌 이미지 하드 삭제
 def hard_delete_image(db: Session, image_id: int) -> None:
     image = db.query(Image).filter(Image.id == image_id).first()
     if image:
@@ -37,16 +38,20 @@ def hard_delete_image(db: Session, image_id: int) -> None:
         db.commit()
 
 
+# 발췌 이미지 소프트 삭제
 def soft_delete_image(db: Session, image_id: int) -> None:
     image = db.query(Image).filter(Image.id == image_id).first()
     if image:
         image.is_deleted = True
         db.commit()
 
-#발췌 이미지 생성
-def create_image_room(db: Session, bubble_id: int, content: str,  image_url: str):
-    image = ImageModel(bubble_id = bubble_id, content=content, image_url=image_url)
+
+# 발췌 이미지 생성
+def create_image(db: Session, bubble_id: int, content: str, image_url: str):
+    image = ImageModel(bubble_id=bubble_id, content=content, image_url=image_url)
     db.add(image)
     db.commit()
     db.refresh(image)
     return image
+
+

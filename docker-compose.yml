@@ -1,12 +1,11 @@
 services:
-
   fastapi-server:
     build: app/
     container_name: fastapi-server
     volumes:
       - ~/.aws:/root/.aws
     ports:
-      - 8000:8000
+      - "8000:8000"
     develop:
       watch:
         - action: sync
@@ -19,3 +18,9 @@ services:
           path: app/requirements.txt
           target: app/
       restart: always
+  
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    container_name: redis
