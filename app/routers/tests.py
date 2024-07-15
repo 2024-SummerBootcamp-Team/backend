@@ -1,4 +1,4 @@
-import io
+from io import BytesIO
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,21 +14,19 @@ from app.services import bubble_service, voice_service
 
 router = APIRouter(
     prefix="/tests",
-    tags=["tests"],
-
-    responses={404: {"description": "Not found"}},
+    tags=["Tests"]
 )
 
 
-# [TEST]  tts 생성 테스트 - stream (임시)
-@router.post("/tts/stream")
+# [TEST] tts 생성 테스트 - stream (임시)
+@router.post("/tts/stream", summary="[TEST] TTS 생성 테스트", description="TTS를 생성한 후 스트리밍으로 반환합니다.")
 def create_tts_stream(req: VoiceCreateRequest):
     audio_stream = text_to_speech_stream(req.content)
     return StreamingResponse(content=audio_stream, media_type="audio/mpeg")
 
 
-# # tts 생성 테스트 - websocket 연결 후 스트리밍 (임시)
-# @router.websocket("/ws/text-to-speech")
+# [TEST] TTS 생성 테스트 - websocket 연결 후 스트리밍 (임시)
+# @router.websocket("/ws/text-to-speech", summary="[TEST] TTS 생성 테스트", description="TTS 생성 테스트 - websocket 연결 후 스트리밍으로 반환합니다.")
 # async def websocket_endpoint(websocket: WebSocket):
 #     await websocket.accept()
 #
@@ -40,7 +38,7 @@ def create_tts_stream(req: VoiceCreateRequest):
 
 
 # [TEST] 버블아이디에 대한 tts 생성, 레디스 저장
-@router.post("/redis/{bubble_id}")  # 버블아이디에 대한 tts 생성하고 그걸 레디스에 저장하는것
+@router.post("/redis/{bubble_id}", summary="[TEST] TTS 생성, 레디스 저장", description="버블아이디에 대한 TTS를 생성하고 레디스에 저장합니다.")  # 버블아이디에 대한 tts 생성하고 그걸 레디스에 저장하는것
 async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
     bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
     if not bubble:
@@ -58,13 +56,13 @@ async def create_tts_stream(bubble_id: int, db: Session = Depends(get_db)):
 
 
 # [TEST] audio_key로 레디스에서 데이터 찾기
-@router.get("/audio/{audio_key}")
+@router.get("/audio/{audio_key}", summary="[TEST] 레디스에서 TTS 찾기", description="audio_key로 레디스에서 TTS 음성 파일을 찾습니다.")
 def get_tts(audio_key: str):
     try:
         audio_data = voice_service.get_voice_from_redis(audio_key)
         if audio_data is None:
             raise HTTPException(status_code=404, detail="해당 키로 데이터를 찾을 수 없습니다.")
-        audio_stream = io.BytesIO(audio_data)
+        audio_stream = BytesIO(audio_data)
         return StreamingResponse(audio_stream, media_type="audio/mpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"TTS 데이터를 가져오는데 실패했습니다: {str(e)}")
