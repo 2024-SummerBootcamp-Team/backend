@@ -34,6 +34,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
             if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (
                     chunk.response_metadata and message_buffer.isalpha()):
                 # 테스크를 생성하고
+                print("message_buffer: ", message_buffer)
                 await tts_queue.put(message_buffer)
                 message_buffer = ""
 
@@ -81,10 +82,11 @@ async def create_bubble(chat_id: int, content: str, db: Session):
         message = await response_queue.get()
         if message is None:
             break
+        yield f"data: {message}\n\n"
         if message.startswith('{"error":'):
             yield f"data: {message}\n\n"
             raise Exception(message)
-        yield f"data: {message}\n\n"
+
 
     # Save the final AI message to the database
     ai_message = await gpt_task
