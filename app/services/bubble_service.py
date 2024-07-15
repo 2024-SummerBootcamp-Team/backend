@@ -24,7 +24,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
 
     try:
         async for chunk in runnable_with_history.astream(
-                [HumanMessage(content=text)],
+                {"name": "박 앙드레아나", "input": text},
                 config={"configurable": {"session_id": str(chat_id)}}
         ):
             ai_message += chunk.content
@@ -34,6 +34,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
             if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (
                     chunk.response_metadata and message_buffer.isalpha()):
                 # 테스크를 생성하고
+                print("message_buffer: ", message_buffer)
                 await tts_queue.put(message_buffer)
                 message_buffer = ""
 
@@ -47,6 +48,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     except Exception as e:
         await message_queue.put(json.dumps({"error": str(e)}))
         await tts_queue.put(None)
+        await message_queue.put(None)
         ai_message = "에러가 발생했습니다."
 
     return ai_message
@@ -80,10 +82,11 @@ async def create_bubble(chat_id: int, content: str, db: Session):
         message = await response_queue.get()
         if message is None:
             break
+        yield f"data: {message}\n\n"
         if message.startswith('{"error":'):
             yield f"data: {message}\n\n"
             raise Exception(message)
-        yield f"data: {message}\n\n"
+
 
     # Save the final AI message to the database
     ai_message = await gpt_task
