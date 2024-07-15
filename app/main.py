@@ -6,7 +6,14 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from .routers import api
 
 # FastAPI를 실행하기 위해 인스턴스 생성
-app = FastAPI()
+app = FastAPI(
+    title="Brain Washer API",
+    description="Brain Washer API",
+    version="1.0.0",
+    contact={
+        "name": "Brain Washer",
+        "url": "http://www.brain-washer.net",
+    })
 
 # CORS 설정
 app.add_middleware(

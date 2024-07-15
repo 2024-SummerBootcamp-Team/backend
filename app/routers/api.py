@@ -6,6 +6,7 @@ router = APIRouter(
 )
 
 router.include_router(chats.router)
-router.include_router(images.router)
 router.include_router(voices.router)
+router.include_router(images.router)
+
 router.include_router(tests.router)
