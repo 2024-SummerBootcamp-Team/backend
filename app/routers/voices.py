@@ -1,25 +1,18 @@
-from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from starlette.responses import FileResponse, StreamingResponse
-from starlette.websockets import WebSocket
-import io
 from io import BytesIO
 
-from ..config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from ..database.session import get_db
 from ..services import voice_service, chat_service, bubble_service
-from ..config.redis.config import Config
 from ..schemas.response import ResultResponseModel
 from app.config.aws.s3Client import upload_voice
 
-from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList, VoiceCreateRequest
+from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList
 
 
 router = APIRouter(
     prefix="/voices",
-    tags=["Voices"],
-    responses={404: {"description": "Not found"}},
+    tags=["Voices"]
 )
 
 
@@ -35,31 +28,25 @@ def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
 async def save_voice(bubble_id: int, db: Session = Depends(get_db)):
     bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
     if not bubble:
-        raise HTTPException(status_code=404, detail="버블아이디 없음")
-
+        raise HTTPException(status_code=404, detail="대화를 불러오는데 실패했습니다.")
     audio_key = f"{bubble_id}"
     audio_data = voice_service.get_voice_from_redis(audio_key)
     if not audio_data:
         raise HTTPException(status_code=404, detail="Redis에 음성 데이터 없음")
-
     try:
         file = BytesIO(audio_data)
         audio_url = await upload_voice(file)
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="실패")
-
     voice = voice_service.create_voice_room(db, bubble_id=bubble_id, audio_url=audio_url)
-
     return voice
 
 
 # 채팅방 별 저장한 목소리 목록 조회
 @router.get("/chat/{chat_id}", response_model=ResultResponseModel, summary="채팅방 별 목소리 목록 조회", description="특정 채팅방에서 저장된 목소리 목록을 조회합니다.")
 def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
-    chat_room = chat_service.get_chat_room(db, chat_id=chat_id)
-    if not chat_room:
-        raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
+    chat_service.get_chat_room(db, chat_id=chat_id)
     voices = voice_service.get_voices_by_chat_id(db, chat_id=chat_id)
     return ResultResponseModel(code=200, message="채팅방 별 목소리 목록을 조회했습니다.", data=VoiceBaseList(voices=voices))
 

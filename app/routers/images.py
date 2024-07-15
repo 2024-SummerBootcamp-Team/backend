@@ -5,12 +5,11 @@ from ..schemas.response import ResultResponseModel
 from ..services import image_service, chat_service, bubble_service
 from app.config.aws.s3Client import upload_image
 from app.schemas.image import ImageBase, ImageBaseList, ImageDetailList
-from fastapi import FastAPI, File, UploadFile  # fastapi에서 file과 uploadFile 임포트
+from fastapi import File, UploadFile
 
 router = APIRouter(
     prefix="/images",
-    tags=["Images"],
-    responses={404: {"description": "Not found"}},
+    tags=["Images"]
 )
 
 

@@ -1,27 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Form
-from typing import Annotated
-
-from langchain_core.messages import HumanMessage
-from pydantic import ValidationError
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
-from ..config.langChain.langChainSetting import runnable_with_history
-from ..schemas.chat import ChatRoomBase
 from ..schemas.response import ResultResponseModel
 from ..services import chat_service
 from ..database.session import get_db
-from ..schemas.bubble import ChatBubbleList, BubbleRequest
+from ..schemas.bubble import BubbleRequest
 from ..schemas.chat import ChatRoomCreateRequest
 from ..services import character_service
 from ..services import bubble_service
 from fastapi.responses import StreamingResponse
 
-
 router = APIRouter(
     prefix="/chats",
-    tags=["Chats"],
-    responses={404: {"description": "Not found"}},
+    tags=["Chats"]
 )
+
 
 # 채팅방 생성
 @router.post("", response_model=ResultResponseModel, summary="채팅방 생성", description="새로운 채팅방을 생성합니다.")
@@ -39,14 +31,16 @@ def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
 @router.post("/{chat_id}", summary="대화 생성 - gpt", description="질문에 대한 gpt와의 답변을 텍스트와 TTS로 생성합니다.")
 async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(get_db)):
     try:
-        response = StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content), media_type="text/event-stream")
+        response = StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content),
+                                     media_type="text/event-stream")
         return response
     except Exception as e:
         raise HTTPException(status_code=404, detail="채팅하기에 실패했습니다.")
 
 
 # 채팅방 정보 조회
-@router.get("/{chat_id}", response_model=ResultResponseModel, summary="단일 채팅방 정보 조회", description="대화 내용을 제외한 채팅방에 대한 정보를 조회합니다.")
+@router.get("/{chat_id}", response_model=ResultResponseModel, summary="단일 채팅방 정보 조회",
+            description="대화 내용을 제외한 채팅방에 대한 정보를 조회합니다.")
 def read_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat = chat_service.get_chat_room(db, chat_id=chat_id)
     if not chat:
@@ -55,8 +49,9 @@ def read_chat_room(chat_id: int, db: Session = Depends(get_db)):
 
 
 # 전체 채팅 내용 조회
-@router.get("/{chat_id}/bubbles", response_model=ResultResponseModel, summary="채팅 내용 조회", description="특정 채팅방의 모든 대화 내용을 조회합니다.")
+@router.get("/{chat_id}/bubbles", response_model=ResultResponseModel, summary="채팅 내용 조회",
+            description="특정 채팅방의 모든 대화 내용을 조회합니다.")
 def read_bubbles_in_chat_room(chat_id: int, db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
     chat_service.get_chat_room(db, chat_id=chat_id)
-    bubbles = chat_service.get_bubbles(db, chat_id=chat_id,skip=skip, limit=limit)
+    bubbles = chat_service.get_bubbles(db, chat_id=chat_id, skip=skip, limit=limit)
     return ResultResponseModel(code=200, message="채팅방 전체 내용을 조회했습니다.", data=bubbles)

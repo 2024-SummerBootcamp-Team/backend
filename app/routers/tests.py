@@ -1,4 +1,4 @@
-import io
+from io import BytesIO
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -14,9 +14,7 @@ from app.services import bubble_service, voice_service
 
 router = APIRouter(
     prefix="/tests",
-    tags=["Tests"],
-
-    responses={404: {"description": "Not found"}},
+    tags=["Tests"]
 )
 
 
@@ -64,7 +62,7 @@ def get_tts(audio_key: str):
         audio_data = voice_service.get_voice_from_redis(audio_key)
         if audio_data is None:
             raise HTTPException(status_code=404, detail="해당 키로 데이터를 찾을 수 없습니다.")
-        audio_stream = io.BytesIO(audio_data)
+        audio_stream = BytesIO(audio_data)
         return StreamingResponse(audio_stream, media_type="audio/mpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"TTS 데이터를 가져오는데 실패했습니다: {str(e)}")
