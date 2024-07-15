@@ -2,6 +2,7 @@ import contextlib
 import json
 import logging
 from abc import ABC, abstractmethod
+from sqlalchemy.orm import declarative_base
 from typing import (
     Any,
     AsyncGenerator,
@@ -67,6 +68,10 @@ class DefaultMessageConverter(BaseMessageConverter):
 
 
 _warned_once_already = False
+
+
+class SQLSession:
+    pass
 
 
 class ChatMessageHistory(BaseChatMessageHistory):
@@ -209,3 +214,25 @@ class ChatMessageHistory(BaseChatMessageHistory):
             )
         async with self.session_maker() as session:
             yield cast(AsyncSession, session)
+
+# 세션 히스토리를 반환하는 함수 정의
+def get_session_history(session_id):
+    return SQLChatMessageHistory(session_id, "sqlite:///memory.db")
+
+# 대화 히스토리를 포함하는 runnable 객체 생성
+from langchain.runnables.history import RunnableWithMessageHistory
+
+with_message_history1 = RunnableWithMessageHistory(
+    llm_chain1,
+    get_session_history
+)
+
+with_message_history2 = RunnableWithMessageHistory(
+    llm_chain2,
+    get_session_history
+)
+
+with_message_history3 = RunnableWithMessageHistory(
+    llm_chain3,
+    get_session_history
+)

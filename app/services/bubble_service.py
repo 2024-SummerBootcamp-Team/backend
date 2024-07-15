@@ -24,7 +24,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
 
     try:
         async for chunk in runnable_with_history.astream(
-                [HumanMessage(content=text)],
+                {"name": "박 앙드레아나", "input": text},
                 config={"configurable": {"session_id": str(chat_id)}}
         ):
             ai_message += chunk.content
@@ -47,6 +47,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     except Exception as e:
         await message_queue.put(json.dumps({"error": str(e)}))
         await tts_queue.put(None)
+        await message_queue.put(None)
         ai_message = "에러가 발생했습니다."
 
     return ai_message
