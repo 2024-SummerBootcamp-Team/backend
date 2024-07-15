@@ -37,20 +37,20 @@ instrumentator.expose(app, include_in_schema=False)
 """
 app.include_router(api.router)
 
-# 첫 번째 질문
-question1 = "What are the key features of Python?"
-answer1 = with_message_history1.invoke(question=question1)
-print("Answer 1: ", answer1)
-
-# 두 번째 질문, 첫 번째 응답을 기반으로
-feature1 = answer1.split()[0]
-answer2 = with_message_history2.invoke(feature=feature1)
-print("Answer 2: ", answer2)
-
-# 최종 응답, 두 번째 응답을 기반으로
-feature2 = answer2.split()[0]
-final_answer = with_message_history3.invoke(feature1=feature1, feature2=feature2)
-print("Final Answer: ", final_answer)
-
-# 디버깅 정보 출력
-langsmith.debug_info()
+# # 첫 번째 질문
+# question1 = "What are the key features of Python?"
+# answer1 = with_message_history1.invoke(question=question1)
+# print("Answer 1: ", answer1)
+#
+# # 두 번째 질문, 첫 번째 응답을 기반으로
+# feature1 = answer1.split()[0]
+# answer2 = with_message_history2.invoke(feature=feature1)
+# print("Answer 2: ", answer2)
+#
+# # 최종 응답, 두 번째 응답을 기반으로
+# feature2 = answer2.split()[0]
+# final_answer = with_message_history3.invoke(feature1=feature1, feature2=feature2)
+# print("Final Answer: ", final_answer)
+#
+# # 디버깅 정보 출력
+# langsmith.debug_info()
