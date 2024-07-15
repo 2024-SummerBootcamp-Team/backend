@@ -47,6 +47,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     except Exception as e:
         await message_queue.put(json.dumps({"error": str(e)}))
         await tts_queue.put(None)
+        await message_queue.put(None)
         ai_message = "에러가 발생했습니다."
 
     return ai_message
