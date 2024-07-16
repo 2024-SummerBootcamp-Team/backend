@@ -5,6 +5,8 @@ from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs, AsyncElevenLabs
 from anyio import open_file
 import os
+
+
 client = ElevenLabs()
 
 async_client = AsyncElevenLabs()
@@ -52,30 +54,30 @@ def text_to_speech_stream(text: str) -> IO[bytes]:
     #     yield chunk
 
 
-async def tts_stream(text: str):
-    # response = async_client.text_to_speech.convert(
-    #     voice_id="Es5AnE58gKPS9Vffyooe",
-    #     optimize_streaming_latency="0",
-    #     output_format="mp3_22050_32",
-    #     text=text,
-    #     model_id="eleven_multilingual_v2",
-    #     voice_settings=VoiceSettings(
-    #         stability=0.5,
-    #         similarity_boost=0.75,
-    #         style=0.0,
-    #         use_speaker_boost=True,
-    #     ),
-    # )
-    file_name = "test.mp3"
-    file_path = os.path.join(os.getcwd(), "config", "elevenlabs", file_name)
-
-    async with await open_file(file_path, 'rb') as file:
-        while True:
-            chunk = await file.read(1024)
-            if not chunk:
-                break
-            yield chunk
-
+def tts_stream(text: str, tts_id: str):
+    response = async_client.text_to_speech.convert(
+        voice_id=tts_id,
+        optimize_streaming_latency="0",
+        output_format="mp3_22050_32",
+        text=text,
+        model_id="eleven_multilingual_v2",
+        voice_settings=VoiceSettings(
+            stability=0.5,
+            similarity_boost=0.8,
+            style=0.8,
+            use_speaker_boost=True,
+        ),
+    )
+    return response
+    # file_name = "test.mp3"
+    # file_path = os.path.join(os.getcwd(), "config", "elevenlabs", file_name)
+    #
+    # async with await open_file(file_path, 'rb') as file:
+    #     while True:
+    #         chunk = await file.read(1024)
+    #         if not chunk:
+    #             break
+    #         yield chunk
 
 
 if __name__ == "__main__":

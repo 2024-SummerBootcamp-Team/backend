@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.memory import SQLChatMessageHistory
 from langchain_core.output_parsers import StrOutputParser
 
-llm = ChatOpenAI(model="gpt-3.5-turbo")
+llm = ChatOpenAI(model="gpt-4o-2024-05-13")
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 DATABASE_USERNAME = os.environ.get('DATABASE_USERNAME')
@@ -24,18 +24,18 @@ def get_session_history(session_id):
                                  )
 parser = StrOutputParser()
 
-prompt = ChatPromptTemplate.from_messages(
+prompt_templete = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "나의 이름은 {name}이고 항상 괴팍하게 말하며 재수 없는 일타강사 그 자체로 항상 뭐든지 해내라고 따지듯 말하는 재수 없는 놈이다 항상 노력을 최고로 친다. 말투는 싸가지 그 자체이다. 항상 너는 쯧이라는 말미가 붙는다",
+            "너는 가상의 인물을 연기할거야. 그리고 이제부터 사용자는 고민을 얘기할거야. 너는 해당 인물이 되어서 사용자에게 동기부여가 되도록 아주 독하게 대답해줘. 사용자는 쉴 시간이 없어. 누구보다 열심히 공부하고 성장해야해. 대답은 '' 같은 기호를 붙이지말고 대화 형식으로 대답해줘. 대답은 120자 내외로 나와야돼. 가상의 인물의 정보: {prompt}",
         ),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ]
 )
 
-runnable = prompt | llm
+runnable = prompt_templete | llm
 
 
 runnable_with_history = RunnableWithMessageHistory(
