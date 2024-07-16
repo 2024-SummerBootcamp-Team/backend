@@ -13,5 +13,6 @@ class Character(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     name = Column(String(20), nullable=False)
     prompt = Column(Text, nullable=False)
+    tts_id = Column(String(45), nullable=False)
 
     chats = relationship("Chat", back_populates="character")
