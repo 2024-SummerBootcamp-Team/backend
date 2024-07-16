@@ -30,9 +30,7 @@ def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
 # 채팅하기: ai 답변 요청
 @router.post("/{chat_id}", summary="대화 생성 - gpt", description="질문에 대한 gpt와의 답변을 텍스트와 TTS로 생성합니다.")
 async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(get_db)):
-    chat = chat_service.get_chat_room(db, chat_id=chat_id)
-    if not chat:
-        raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
+    chat_service.get_chat_room(db, chat_id=chat_id)
     try:
         response = StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content),
                                      media_type="text/event-stream")
@@ -46,8 +44,6 @@ async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(
             description="대화 내용을 제외한 채팅방에 대한 정보를 조회합니다.")
 def read_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat = chat_service.get_chat_room(db, chat_id=chat_id)
-    if not chat:
-        raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
     return ResultResponseModel(code=200, message="채팅방 정보를 조회했습니다.", data=chat)
 
 
