@@ -34,15 +34,16 @@ parser = StrOutputParser()
 
 prompt = ChatPromptTemplate.from_messages(
     [
+        ("system", "{prompt}"),
         MessagesPlaceholder(variable_name="history"),
-        MessagesPlaceholder(variable_name="input"),
+        ("human", "{input}")
     ]
 )
 
 
 trimmer = trim_messages(
     strategy="last",
-    max_tokens=1000,
+    max_tokens=500,
     token_counter=ChatOpenAI(model="gpt-4o"),
     include_system=True,
 )
