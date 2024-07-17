@@ -1,0 +1,8 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /app/logs/*.log  # 로그 경로
+
+output.logstash:
+  hosts: ["backend-logstash-1:5044"]

@@ -58,3 +58,32 @@ services:
 
     privileged: true
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.4
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./app/config/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./app/config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.4
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.4
+    volumes:
+      - ./app/config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./app/logs:/app/logs:ro  # 로그 디렉토리 마운트
+    depends_on:
+      - logstash
