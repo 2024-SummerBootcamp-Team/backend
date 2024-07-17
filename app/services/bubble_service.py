@@ -3,7 +3,7 @@ import json
 from datetime import timedelta
 from io import BytesIO
 
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from sqlalchemy.orm import Session
 
 from app.config.langChain.langChainSetting import runnable_with_history
@@ -32,7 +32,10 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
 
     try:
         async for chunk in runnable_with_history.astream(
-                {"prompt": prompt, "input": text},
+                {
+                    "input": [SystemMessage(content=prompt),
+                              HumanMessage(content=text)]
+                },
                 config={"configurable": {"session_id": str(chat_id)}}
         ):
             ai_message += chunk.content
