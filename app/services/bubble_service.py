@@ -121,3 +121,5 @@ async def create_bubble(chat_id: int, content: str, db: Session):
 
     # Redis에 오디오 데이터 저장
     redis_client.setex(str(db_bubble_ai.id), timedelta(seconds=600), audio_data_bytes)  # 생성과 동시에 10초뒤에 사라짐
+
+    yield f"data: {json.dumps({'bubble_id': str(db_bubble_ai.id)})}\n\n"

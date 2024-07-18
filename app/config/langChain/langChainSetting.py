@@ -61,7 +61,8 @@ chain_with_trimming = (
 
 # 메시지 히스토리를 포함하여 넣어주는 러너블 생성
 runnable_with_history = RunnableWithMessageHistory(
-    chain_with_trimming,
+    # chain_with_trimming,
+    prompt | llm,
     get_session_history,
     input_messages_key="input",
     history_messages_key="chat_history",
