@@ -1,0 +1,14 @@
+version: "3"
+services:
+  teamh-backend-blue:
+    container_name: teamh-backend-blue #컨테이너의 이름을 teamh-backend-blue로 저장. 이 이름을 Docker 엔진에서 컨테이너를 식별할 때 사용
+    image: ${DOCKERHUB_USERNAME}/teamh-backend #docker bub에서 이미지 가져와 사용
+    ports:
+      - "8081:8080"
+    restart: always #컨테이너가 중지될 때 항상 재시작되도록
+
+networks: #docker 네트워크 설정을 정의
+  default: #네트워크 정의. compose 파일에서 정의된 모든 서비스가 기본적으로 이 네트워크에 연결
+    external: #외부 네트워크 지정. docker compoose 파일에서 정의되지 않앗으며 이미 docker 엔진에 존재하는 네트워크
+      name: teamh #외부 네트워크
+
