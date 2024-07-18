@@ -1,9 +1,11 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.bubble import Bubble
 from app.models.voice import Voice
 from app.schemas.voice import VoiceDetail
 from app.config.redis.config import Config
+from app.services import bubble_service
 
 redis_client = Config.get_redis_client()
 
@@ -52,8 +54,13 @@ def soft_delete_voice(db: Session, voice_id: int) -> None:
 def get_voice_from_redis(key: str):
     return redis_client.get(key)
 
-def create_voice_room(db: Session, bubble_id: int,audio_url: str):
-    voice = Voice(bubble_id = bubble_id, content=" ",audio_url=audio_url)
+
+# 사용자 선택 목소리 저장
+def create_voice(db: Session, bubble_id: int, audio_url: str):
+    bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
+    if not bubble:
+        raise HTTPException(status_code=404, detail="대화를 불러오는데 실패했습니다.")
+    voice = Voice(bubble_id=bubble_id, content=bubble.content, audio_url=audio_url)
     db.add(voice)
     db.commit()
     db.refresh(voice)
