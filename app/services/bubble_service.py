@@ -3,7 +3,7 @@ import json
 from datetime import timedelta
 from io import BytesIO
 
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from sqlalchemy.orm import Session
 
 from app.config.langChain.langChainSetting import runnable_with_history
@@ -28,11 +28,10 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
     total_audio_queue = asyncio.Queue()
     loop = asyncio.get_event_loop()
     tts_task = loop.create_task(async_tts_stream(message_queue, tts_queue, total_audio_queue, tts_id))
-    print("prompt: ", prompt)
 
     try:
         async for chunk in runnable_with_history.astream(
-                {"prompt": prompt, "input": text},
+                {"prompt": prompt, "input": text}, # 프롬프트랑 사용자 입력을 넣어줍니다.
                 config={"configurable": {"session_id": str(chat_id)}}
         ):
             ai_message += chunk.content
@@ -42,7 +41,6 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
             if any(keyword in chunk.content for keyword in [".", "!", "?"]) or (
                     chunk.response_metadata and message_buffer.isalpha()):
                 # 테스크를 생성하고
-                print("message_buffer: ", message_buffer)
                 await tts_queue.put(message_buffer)
                 message_buffer = ""
 
@@ -71,7 +69,6 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
 
 # This is a placeholder for the actual TTS stream generator.
 async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queue, total_audio_queue: asyncio.Queue, tts_id: str):
-    print("tts_id: ", tts_id)
     while True:
         text = await tts_queue.get()
         if text is None:
