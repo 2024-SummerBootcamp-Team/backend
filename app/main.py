@@ -2,6 +2,7 @@ import app.config.envSetting # 환경 변수를 가져오기 위한 설정
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
+import logging
 
 from .routers import api
 
@@ -27,10 +28,14 @@ app.add_middleware(
 instrumentator = Instrumentator().instrument(app)
 instrumentator.expose(app, include_in_schema=False)
 
-
-
-
 # 라우팅 설정
+logging.basicConfig(
+    filename='/app/logs/app.log',  # 로그 파일 이름
+    level=logging.INFO,  # 로그 레벨
+    format='%(asctime)s %(levelname)s %(message)s'  # 로그 메시지 포맷
+)
+
+
 """
 라우트란?
 - 클라이언트로부터 요청을 받았을 때, 해당 요청을 처리할 수 있는 함수를 매핑하는 것
