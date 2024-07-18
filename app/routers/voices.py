@@ -25,7 +25,7 @@ def read_voices(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
 
 # 사용자 선택 목소리 저장
 @router.post("/{bubble_id}", summary="사용자가 선택한 목소리 저장", description="대화 중 사용자가 선택한 목소리를 DB에 저장합니다.")
-async def save_voice(bubble_id: int, db: Session = Depends(get_db)):
+async def create_voice(bubble_id: int, db: Session = Depends(get_db)):
     bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
     if not bubble:
         raise HTTPException(status_code=404, detail="대화를 불러오는데 실패했습니다.")
@@ -39,7 +39,7 @@ async def save_voice(bubble_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         print(e)
         raise HTTPException(status_code=500, detail="실패")
-    voice = voice_service.create_voice_room(db, bubble_id=bubble_id, audio_url=audio_url)
+    voice = voice_service.create_voice(db, bubble_id=bubble_id, audio_url=audio_url)
     return voice
 
 
