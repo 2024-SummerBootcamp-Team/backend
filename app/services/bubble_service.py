@@ -11,6 +11,7 @@ from app.config.redis.config import Config
 from app.models import Bubble
 
 from app.config.elevenlabs.text_to_speech_stream import tts_stream
+from app.services import chat_service, character_service
 
 
 # 채팅 내용 조회
@@ -19,18 +20,19 @@ def get_bubble(db: Session, bubble_id: int):
 
 
 # This is a placeholder for the actual GPT stream generator.
-async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int):
+async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int, prompt: str, tts_id: str):
     ai_message = ""
     message_buffer = ""
     audio_data = BytesIO()
     tts_queue = asyncio.Queue()
     total_audio_queue = asyncio.Queue()
     loop = asyncio.get_event_loop()
-    tts_task = loop.create_task(async_tts_stream(message_queue, tts_queue, total_audio_queue))
+    tts_task = loop.create_task(async_tts_stream(message_queue, tts_queue, total_audio_queue, tts_id))
+    print("prompt: ", prompt)
 
     try:
         async for chunk in runnable_with_history.astream(
-                {"name": "박 앙드레아나", "input": text},
+                {"prompt": prompt, "input": text},
                 config={"configurable": {"session_id": str(chat_id)}}
         ):
             ai_message += chunk.content
@@ -68,13 +70,14 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
 
 
 # This is a placeholder for the actual TTS stream generator.
-async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queue, total_audio_queue: asyncio.Queue):
+async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queue, total_audio_queue: asyncio.Queue, tts_id: str):
+    print("tts_id: ", tts_id)
     while True:
         text = await tts_queue.get()
         if text is None:
             break
         try:
-            async for audio_chunk in tts_stream(text):
+            async for audio_chunk in tts_stream(text, tts_id):
                 encoded_audio = audio_chunk.hex()
                 await total_audio_queue.put(audio_chunk)
                 await message_queue.put(json.dumps({"audio": encoded_audio}))
@@ -85,13 +88,19 @@ async def async_tts_stream(message_queue: asyncio.Queue, tts_queue: asyncio.Queu
 
 # 채팅하기: ai 답변 요청
 async def create_bubble(chat_id: int, content: str, db: Session):
+    chat = chat_service.get_chat_room(db, chat_id=chat_id)
+    # 캐릭터 프롬프트 가져오기
+    character = character_service.get_character(db, character_id=chat.character_id)
+    prompt = character.prompt
+    tts_id = character.tts_id
+
     # Save the user message to the database
     db_bubble_user = Bubble(chat_id=chat_id, writer=1, content=content)
     db.add(db_bubble_user)
 
     response_queue = asyncio.Queue()
     loop = asyncio.get_event_loop()
-    gpt_task = loop.create_task(async_gpt_stream(text=content, message_queue=response_queue, chat_id=chat_id))
+    gpt_task = loop.create_task(async_gpt_stream(text=content, message_queue=response_queue, chat_id=chat_id, prompt=prompt, tts_id=tts_id))
 
     while not gpt_task.done():
         message = await response_queue.get()

@@ -1,8 +1,12 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
+
+from app.config.aws.s3Client import list_images_in_directory
 from app.models import Bubble
 from app.models.image import Image
 from app.schemas.image import ImageDetail
 from app.models.image import Image as ImageModel
+from app.services import character_service
 
 
 # 저장된 모든 발췌 이미지 목록 조회
@@ -55,3 +59,10 @@ def create_image(db: Session, bubble_id: int, content: str, image_url: str):
     return image
 
 
+# 발췌 이미지 배경 목록 조회 - S3
+def get_samples(db: Session, character_name: str):
+    character = character_service.get_character_by_name(db, character_name)
+    if not character:
+        raise HTTPException(status_code=404, detail="캐릭터 정보를 불러오는데 실패했습니다.")
+    images = list_images_in_directory(character_name)
+    return images
