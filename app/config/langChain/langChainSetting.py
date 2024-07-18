@@ -10,7 +10,7 @@ from langchain_core.messages import (
     trim_messages,
 )
 
-llm = ChatOpenAI(model="gpt-3.5-turbo")
+llm = ChatOpenAI(model="gpt-4o-2024-05-13")
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 DATABASE_USERNAME = os.environ.get('DATABASE_USERNAME')
