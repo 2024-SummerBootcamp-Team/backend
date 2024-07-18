@@ -32,7 +32,7 @@ async def async_gpt_stream(text: str, message_queue: asyncio.Queue, chat_id: int
 
     try:
         async for chunk in runnable_with_history.astream(
-                {"prompt": prompt, "input": text},
+                {"prompt": prompt, "input": text}, # 프롬프트랑 사용자 입력을 넣어줍니다.
                 config={"configurable": {"session_id": str(chat_id)}}
         ):
             ai_message += chunk.content
