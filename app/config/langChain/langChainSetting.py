@@ -43,7 +43,7 @@ prompt = ChatPromptTemplate.from_messages(
 
 trimmer = trim_messages(
     strategy="last",
-    max_tokens=400,
+    max_tokens=1000,
     token_counter=llm,
     include_system=True,
 )
