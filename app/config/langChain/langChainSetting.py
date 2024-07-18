@@ -1,7 +1,7 @@
 from operator import itemgetter
 
 from langchain_openai import ChatOpenAI
-from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory, RunnablePassthrough
 import os
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_message_histories import SQLChatMessageHistory
@@ -35,7 +35,7 @@ parser = StrOutputParser()
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", "{prompt}"),
-        MessagesPlaceholder(variable_name="history"),
+        MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{input}")
     ]
 )
@@ -43,15 +43,20 @@ prompt = ChatPromptTemplate.from_messages(
 
 trimmer = trim_messages(
     strategy="last",
-    max_tokens=1000,
-    token_counter=llm,
+    max_tokens=20,
+    token_counter=len,
     include_system=True,
 )
 
+chain_with_trimming = (
+    RunnablePassthrough.assign(chat_history=itemgetter("chat_history") | trimmer)
+    | prompt
+    | llm
+)
 
 runnable_with_history = RunnableWithMessageHistory(
-    prompt | trimmer | llm,
+    chain_with_trimming,
     get_session_history,
     input_messages_key="input",
-    history_messages_key="history",
+    history_messages_key="chat_history",
 )
