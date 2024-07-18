@@ -2,7 +2,7 @@ import app.config.envSetting # 환경 변수를 가져오기 위한 설정
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
-
+import logging
 
 from .routers import api
 
@@ -29,6 +29,11 @@ instrumentator = Instrumentator().instrument(app)
 instrumentator.expose(app, include_in_schema=False)
 
 # 라우팅 설정
+logging.basicConfig(
+    filename='/app/logs/app.log',  # 로그 파일 이름
+    level=logging.INFO,  # 로그 레벨
+    format='%(asctime)s %(levelname)s %(message)s'  # 로그 메시지 포맷
+)
 
 
 """
