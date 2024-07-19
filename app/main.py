@@ -31,7 +31,7 @@ instrumentator = Instrumentator().instrument(app)
 instrumentator.expose(app, include_in_schema=False)
 
 
-# 로그 생성
+#로그 생성
 # logging.basicConfig(
 #     filename='/app/logs/app.log',  # 로그 파일 이름
 #     level=logging.INFO,  # 로그 레벨
