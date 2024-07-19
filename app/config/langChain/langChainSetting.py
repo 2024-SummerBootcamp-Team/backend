@@ -66,3 +66,7 @@ runnable_with_history = RunnableWithMessageHistory(
     input_messages_key="input",
     history_messages_key="chat_history",
 )
+
+# TODO: 메시지 정리 추가
+# Summary memory
+# https://github.com/langchain-ai/langchain/blob/master/docs/docs/how_to/chatbots_memory.ipynb
