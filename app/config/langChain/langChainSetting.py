@@ -1,10 +1,12 @@
 from operator import itemgetter
 
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables.history import RunnableWithMessageHistory, RunnablePassthrough
 import os
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_community.chat_message_histories import SQLChatMessageHistory
+# from app.config.langChain.SQLChatMessageHistoryCustom import SQLChatMessageHistory
+
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.messages import (
     trim_messages,
@@ -44,13 +46,11 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# 토큰 제한 트리머 설정
-trimmer = trim_messages(
-    strategy="last",      # 최근 메시지를 기준으로 토큰 제한
-    max_tokens=20,        # 최대 20토큰까지 제한
-    token_counter=len,    # 토큰의 길이를 계산, 임시적으로 길이 계산 적용
-    include_system=True,  # 시스템 메시지도 포함
-)
+trimmer = trim_messages(strategy="last",
+                        max_tokens=200,
+                        token_counter=llm.get_num_tokens_from_messages,
+                        )
+
 
 # 트리밍이 적용된 체인 설정
 chain_with_trimming = (
@@ -61,8 +61,7 @@ chain_with_trimming = (
 
 # 메시지 히스토리를 포함하여 넣어주는 러너블 생성
 runnable_with_history = RunnableWithMessageHistory(
-    # chain_with_trimming,
-    prompt | llm,
+    chain_with_trimming,
     get_session_history,
     input_messages_key="input",
     history_messages_key="chat_history",
