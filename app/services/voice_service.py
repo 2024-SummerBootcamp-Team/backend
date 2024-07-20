@@ -17,6 +17,7 @@ def get_voices(db: Session, skip: int = 0, limit: int = 100):
         id=voice.id,
         chat_id=voice.bubble.chat_id,
         character=voice.bubble.chat.character.name,
+        character_image=voice.bubble.chat.character.image_url,
         bubble_id=voice.bubble_id,
         audio_url=voice.audio_url,
         content=voice.content,
