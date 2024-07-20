@@ -32,4 +32,4 @@ venv
 # log
 *.log
 
-monitoring/grafana/data
+#monitoring/grafana/data
