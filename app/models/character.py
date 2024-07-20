@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 
 class Character(Base):
-    __tablename__ = 'character'
+    __tablename__ = 'character.py'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     is_deleted = Column(Boolean, default=False, nullable=False)
@@ -16,4 +16,4 @@ class Character(Base):
     tts_id = Column(String(45), nullable=False)
     image_url = Column(String(500), nullable=False)
 
-    chats = relationship("Chat", back_populates="character")
+    chats = relationship("Chat", back_populates="character.py")
