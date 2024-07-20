@@ -14,5 +14,6 @@ class Character(Base):
     name = Column(String(20), nullable=False)
     prompt = Column(Text, nullable=False)
     tts_id = Column(String(45), nullable=False)
+    image_url = Column(String(500), nullable=False)
 
     chats = relationship("Chat", back_populates="character")

@@ -98,7 +98,7 @@ def list_images_in_directory(character_name: str):
     :return: 이미지 URL 리스트
     """
     bucket_name = "teamh-bucket"
-    prefix = f"samples/{character_name}/"  # 디렉토리 경로: 캐릭터 명
+    prefix = f"characters/{character_name}/"  # 디렉토리 경로: 캐릭터 명
 
     # Create an S3 client
     s3_client = boto3.client('s3')

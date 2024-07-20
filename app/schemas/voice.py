@@ -26,6 +26,7 @@ class VoiceDetail(BaseModel):
     id: int
     chat_id: int
     character: str
+    character_image: str
     bubble_id: int
     audio_url: str
     content: str
