@@ -31,12 +31,12 @@ instrumentator = Instrumentator().instrument(app)
 instrumentator.expose(app, include_in_schema=False)
 
 
-# 로그 생성
-# logging.basicConfig(
-#     filename='/app/logs/app.log',  # 로그 파일 이름
-#     level=logging.INFO,  # 로그 레벨
-#     format='%(asctime)s %(levelname)s %(message)s'  # 로그 메시지 포맷
-# )
+#로그 생성
+logging.basicConfig(
+    filename='/app/logs/app.log',  # 로그 파일 이름
+    level=logging.INFO,  # 로그 레벨
+    format='%(asctime)s %(levelname)s %(message)s'  # 로그 메시지 포맷
+)
 
 
 # 라우팅 설정
