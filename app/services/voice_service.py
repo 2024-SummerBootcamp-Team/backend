@@ -17,6 +17,7 @@ def get_voices(db: Session, skip: int = 0, limit: int = 100):
         id=voice.id,
         chat_id=voice.bubble.chat_id,
         character=voice.bubble.chat.character.name,
+        character_image=voice.bubble.chat.character.image_url,
         bubble_id=voice.bubble_id,
         audio_url=voice.audio_url,
         content=voice.content,
@@ -26,7 +27,17 @@ def get_voices(db: Session, skip: int = 0, limit: int = 100):
 
 # 채팅방 별 목소리 목록 조회
 def get_voices_by_chat_id(db: Session, chat_id: int):
-    return db.query(Voice).join(Voice.bubble).filter(Bubble.chat_id == chat_id, Voice.is_deleted == False).all()
+    voices = db.query(Voice).join(Voice.bubble).filter(Bubble.chat_id == chat_id, Voice.is_deleted == False).all()
+    return [VoiceDetail(
+            id=voice.id,
+            chat_id=voice.bubble.chat_id,
+            character=voice.bubble.chat.character.name,
+            character_image=voice.bubble.chat.character.image_url,
+            bubble_id=voice.bubble_id,
+            audio_url=voice.audio_url,
+            content=voice.content,
+            created_at=voice.created_at
+        ) for voice in voices]
 
 
 # 단일 목소리 상세 조회

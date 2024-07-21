@@ -1,7 +1,7 @@
 services:
   fastapi-server:
+    container_name: fastapi
     build: app/
-    container_name: fastapi-server
     volumes:
       - ~/.aws:/root/.aws
       - ./app:/app
@@ -19,36 +19,47 @@ services:
           path: app/requirements.txt
           target: app/
       restart: always
+    networks:
+      - teamhnet
 
-  
+
   redis:
+    container_name: redis
     image: redis
     ports:
       - "6379:6379"
-    container_name: redis
-
-
+    networks:
+      - teamhnet
 
 
   prometheus:
+    container_name: prometheus
     image: prom/prometheus:latest
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - "9090:9090"
-    container_name: prometheus
+    networks:
+      - teamhnet
+
 
   grafana:
+    container_name: grafana
     image: grafana/grafana:latest
+    volumes:
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards/
     ports:
       - "3000:3000"
+    networks:
+      - teamhnet
 
 
   cadvisor:
+    container_name: cadvisor
     image: gcr.io/cadvisor/cadvisor:latest
-
     ports:
       - "8080:8080"
     volumes:
@@ -56,35 +67,56 @@ services:
       - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-
     privileged: true
+    networks:
+      - teamhnet
+
 
 #  elasticsearch:
+#    container_name: elasticsearch
 #    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
 #    environment:
 #      - discovery.type=single-node
 #    ports:
 #      - "9200:9200"
+#    networks:
+#      - teamhnet
+#
 #
 #  logstash:
+#    container_name: logstash
 #    image: docker.elastic.co/logstash/logstash:7.17.4
 #    ports:
 #      - "5044:5044"
 #    volumes:
-#      - ./elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-#      - ./elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+#      - ./monitoring/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+#      - ./monitoring/elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+#    networks:
+#      - teamhnet
+#
 #
 #  kibana:
+#    container_name: kibana
 #    image: docker.elastic.co/kibana/kibana:7.17.4
 #    ports:
 #      - "5601:5601"
 #    environment:
 #      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+#    networks:
+#      - teamhnet
+#
 #
 #  filebeat:
+#    container_name: filebeat
 #    image: docker.elastic.co/beats/filebeat:7.17.4
 #    volumes:
-#      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml  # 경로 수정
+#      - ./monitoring/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml  # 경로 수정
 #      - ./app/logs:/app/logs:ro
 #    depends_on:
 #      - logstash
+#    networks:
+#      - teamhnet
+
+
+networks:
+  teamhnet:
