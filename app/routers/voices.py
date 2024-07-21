@@ -48,7 +48,7 @@ async def create_voice(bubble_id: int, db: Session = Depends(get_db)):
 def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat_service.get_chat_room(db, chat_id=chat_id)
     voices = voice_service.get_voices_by_chat_id(db, chat_id=chat_id)
-    return ResultResponseModel(code=200, message="채팅방 별 목소리 목록을 조회했습니다.", data=VoiceBaseList(voices=voices))
+    return ResultResponseModel(code=200, message="채팅방 별 목소리 목록을 조회했습니다.", data=VoiceDetailList(voices=voices))
 
 
 # 저장한 목소리 상세 조회
