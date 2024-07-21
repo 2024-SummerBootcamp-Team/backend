@@ -13,4 +13,5 @@ def get_character_by_name(db: Session, character_name: str):
 
 def get_characters(db: Session, skip: int = 0, limit: int = 100):
     characters = db.query(Character).filter(Character.is_deleted == False).offset(skip).limit(limit).all()
-    return CharacterList(characters=[CharacterDetail(character) for character in characters])
+    character_list = [CharacterDetail(id=character.id, name=character.name, image_url=character.image_url) for character in characters]
+    return character_list
