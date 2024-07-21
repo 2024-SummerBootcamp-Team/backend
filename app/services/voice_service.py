@@ -42,7 +42,19 @@ def get_voices_by_chat_id(db: Session, chat_id: int):
 
 # 단일 목소리 상세 조회
 def get_voice(db: Session, voice_id: int):
-    return db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+    voice = db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+    if not voice:
+        raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
+    return VoiceDetail(
+            id=voice.id,
+            chat_id=voice.bubble.chat_id,
+            character=voice.bubble.chat.character.name,
+            character_image=voice.bubble.chat.character.image_url,
+            bubble_id=voice.bubble_id,
+            audio_url=voice.audio_url,
+            content=voice.content,
+            created_at=voice.created_at
+        )
 
 
 # 저장한 목소리 하드 삭제
