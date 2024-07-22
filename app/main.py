@@ -47,7 +47,7 @@ watchfiles_logger.setLevel(logging.WARNING)
 logging.basicConfig(
     filename='/app/logs/app.log',  # 로그 파일 이름
     level=logging.INFO,  # 로그 레벨을 INFO로 설정
-    format='%(asctime)s %(levelname)s %(name)s %(module)s %(message)s'  # 로그 메시지 포맷
+    format='%(asctime)s %(levelname)s %(name)s %(message)s'  # 로그 메시지 포맷
 
 )
 
