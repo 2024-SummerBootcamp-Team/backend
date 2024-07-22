@@ -28,8 +28,15 @@ execute_and_log() {
         log_message "성공: $command"
     else
         log_message "실패: $command"
+        exit 1
     fi
 }
+
+# jq 설치 확인 및 설치
+if ! command -v jq &> /dev/null; then
+    log_message "jq가 설치되어 있지 않습니다. 설치를 진행합니다."
+    execute_and_log "sudo apt-get update && sudo apt-get install -y jq"
+fi
 
 # 컨테이너 스위칭 함수
 switch_container() {
@@ -105,7 +112,7 @@ log_message "배포 시작"
 
 execute_and_log "docker ps -a"
 
-switch_containe
+switch_container
 
 CURRENT_PID=$(docker ps | grep $DOCKER_APP_NAME | awk '{print $1}')
 if [ -z "$CURRENT_PID" ]; then
