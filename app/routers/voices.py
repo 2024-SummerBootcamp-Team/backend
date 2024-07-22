@@ -7,7 +7,7 @@ from ..services import voice_service, chat_service, bubble_service
 from ..schemas.response import ResultResponseModel
 from app.config.aws.s3Client import upload_voice
 
-from app.schemas.voice import VoiceBase, VoiceBaseList, VoiceDetailList
+from app.schemas.voice import VoiceDetail, VoiceDetailList
 
 
 router = APIRouter(
@@ -48,16 +48,14 @@ async def create_voice(bubble_id: int, db: Session = Depends(get_db)):
 def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat_service.get_chat_room(db, chat_id=chat_id)
     voices = voice_service.get_voices_by_chat_id(db, chat_id=chat_id)
-    return ResultResponseModel(code=200, message="채팅방 별 목소리 목록을 조회했습니다.", data=VoiceBaseList(voices=voices))
+    return ResultResponseModel(code=200, message="채팅방 별 목소리 목록을 조회했습니다.", data=VoiceDetailList(voices=voices))
 
 
 # 저장한 목소리 상세 조회
 @router.get("/{voice_id}", response_model=ResultResponseModel, summary="저장한 목소리 상세 조회", description="특정 목소리의 상세 정보를 조회합니다.")
 def read_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
-    if not voice:
-        raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
-    return ResultResponseModel(code=200, message="목소리 상세 정보를 조회했습니다.", data=VoiceBase.from_orm(voice))
+    return ResultResponseModel(code=200, message="목소리 상세 정보를 조회했습니다.", data=voice)
 
 
 # 저장한 목소리 소프트 삭제

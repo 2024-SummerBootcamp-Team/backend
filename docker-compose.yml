@@ -25,54 +25,54 @@ services:
 
 
 
-#
-#  redis:
-#    container_name: redis
-#    image: redis
-#    ports:
-#      - "6379:6379"
-#    networks:
-#      - teamhnet
-#
-#
-#  prometheus:
-#    container_name: prometheus
-#    image: prom/prometheus:latest
-#    volumes:
-#      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-#    command:
-#      - '--config.file=/etc/prometheus/prometheus.yml'
-#    ports:
-#      - "9090:9090"
-#    networks:
-#      - teamhnet
-#
-#
-#  grafana:
-#    container_name: grafana
-#    image: grafana/grafana:latest
-#    volumes:
-#      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources/
-#      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards/
-#    ports:
-#      - "3000:3000"
-#    networks:
-#      - teamhnet
-#
-#
-#  cadvisor:
-#    container_name: cadvisor
-#    image: gcr.io/cadvisor/cadvisor:latest
-#    ports:
-#      - "8080:8080"
-#    volumes:
-#      - /:/rootfs:ro
-#      - /var/run:/var/run:ro
-#      - /sys:/sys:ro
-#      - /var/lib/docker/:/var/lib/docker:ro
-#    privileged: true
-#    networks:
-#      - teamhnet
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - teamhnet
+
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    networks:
+      - teamhnet
+
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    volumes:
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources/
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards/
+    ports:
+      - "3000:3000"
+    networks:
+      - teamhnet
+
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    privileged: true
+    networks:
+      - teamhnet
 
 
 
@@ -131,6 +131,4 @@ services:
 
 networks:
   teamhnet:
-
     driver: bridge
-
