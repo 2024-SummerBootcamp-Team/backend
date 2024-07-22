@@ -5,4 +5,6 @@ filebeat.inputs:
       - /app/logs/*.log  # 로그 경로를 변경
 
 output.logstash:
-  hosts: ["backend-logstash-1:5044"]
+  hosts: ["logstash:5044"]
+
+logging.level: error
