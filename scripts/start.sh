@@ -5,16 +5,11 @@ DOCKER_APP_NAME="teamh-backend"
 
 APP_LOG="$PROJECT_ROOT/application.log"
 ERROR_LOG="$PROJECT_ROOT/error.log"
-DEPLOY_LOG="$PROJECT_ROOT/deploy.log" #배포 로그
+DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
 TIME_NOW=$(date +%c) #현재 시간
 
-BLUE_DOCKER_COMPOSE_FILE_NAME="docker-compose.blue"
-GREEN_DOCKER_COMPOSE_FILE_NAME="docker-compose.green"
-
-CONTAINER_SETUP_DELAY_SECOND=10 #컨테이너 실행 지연 시간
 MAX_RETRY_COUNT=15 #health check 최대 시도 횟수
-RETRY_DELAY_SECOND=2 #지연 시간
 
 
 #로그 메시지 기록 함수
@@ -36,53 +31,61 @@ execute_and_log() {
     fi
 }
 
-# Health Check 함수
-health_check() {
-    local REQUEST_URL=$1
-    local RETRY_COUNT=0
-    while [ $RETRY_COUNT -lt $MAX_RETRY_COUNT ]; do
-        log_message "상태 검사 ( $REQUEST_URL )  ...  $(( RETRY_COUNT + 1 ))"
-        sleep $RETRY_DELAY_SECOND
-        REQUEST=$(curl -o /dev/null -s -w "%{http_code}\n" $REQUEST_URL)
-        if [ "$REQUEST" -eq 200 ]; then
-            log_message "상태 검사 성공"
-            return 0
-        fi
-        RETRY_COUNT=$(( RETRY_COUNT + 1 ))
-    done
-    return 1
+# 컨테이너 스위칭 함수
+switch_container() {
+    IS_BLUE=$(docker-compose -p "${DOCKER_APP_NAME}-blue" -f ${PROJECT_ROOT}/docker-compose.blue.yml ps | grep Up)
+    if [ -z "$IS_BLUE" ]; then
+        log_message "### GREEN => BLUE ###"
+        execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-blue -f ${PROJECT_ROOT}/docker-compose.blue.yml up -d"
+        BEFORE_COMPOSE_COLOR="green"
+        AFTER_COMPOSE_COLOR="blue"
+
+        sleep 30
+
+        health_check "http://127.0.0.1:8001/actuator/health"
+    else
+        log_message "### BLUE => GREEN ###"
+        execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-green -f ${PROJECT_ROOT}/docker-compose.green.yml up -d"
+        BEFORE_COMPOSE_COLOR="blue"
+        AFTER_COMPOSE_COLOR="green"
+
+        sleep 30
+
+        health_check "http://127.0.0.1:8002/actuator/health"
+    fi
 }
 
-#teamh-backend라는 이름을 가진 애플리케이션이 있는지 확인
-EXIST_DOCKER_APP=$(docker ps -a | grep $DOCKER_APP_NAME)
+# 헬스 체크 함수
+health_check() {
+    local RETRIES=0
+    local URL=$1
+    while [ $RETRIES -lt $MAX_RETRY_COUNT ]; do
+        log_message "Checking service at $URL... (attempt: $((RETRIES+1)))"
+        sleep 3
 
-if [ "$(docker ps -q -f name=${DOCKER_APP_NAME}-blue)" ]; then #blue 컨테이너가 실행 중인지 확인, 실행 중이면 green 배포, green 환경이 정상적으로 동작하면 nginx 설정 업데이트 하고 blue 환경 종료
-    log_message "blue >> green"
-    execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-green -f ${PROJECT_ROOT}/${GREEN_DOCKER_COMPOSE_FILE_NAME}.yml up -d --build"
-    log_message "${CONTAINER_SETUP_DELAY_SECOND}초 대기"
-    sleep $CONTAINER_SETUP_DELAY_SECOND
-    if health_check "$GREEN_SERVER_URL$HEALTH_END_POINT"; then
-        log_message "green 배포 성공"
-        execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-blue -f ${PROJECT_ROOT}/${BLUE_DOCKER_COMPOSE_FILE_NAME}.yml down"
-    else
-        log_message "green 배포 실패"
-        execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-green -f ${PROJECT_ROOT}/${GREEN_DOCKER_COMPOSE_FILE_NAME}.yml down"
-        exit 1
-    fi
-else
-    log_message "green >> blue"
-    execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-blue -f ${PROJECT_ROOT}/${BLUE_DOCKER_COMPOSE_FILE_NAME}.yml up -d --build"
-    log_message "${CONTAINER_SETUP_DELAY_SECOND}초 대기"
-    sleep $CONTAINER_SETUP_DELAY_SECOND
-    if health_check "$BLUE_SERVER_URL$HEALTH_END_POINT"; then
-        log_message "blue 배포 성공"
-        execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-green -f ${PROJECT_ROOT}/${GREEN_DOCKER_COMPOSE_FILE_NAME}.yml down"
-    else
-        log_message "blue 배포 실패"
-        execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-blue -f ${PROJECT_ROOT}/${BLUE_DOCKER_COMPOSE_FILE_NAME}.yml down"
-        exit 1
-    fi
-fi
+        RESPONSE=$(curl -s "$URL")
+        if [ -n "$RESPONSE" ]; then
+            STATUS=$(echo "$RESPONSE" | jq -r '.status')
+            if [ "$STATUS" = "UP" ]; then
+                log_message "health check success"
+                return 0
+            fi
+        fi
+
+        RETRIES=$((RETRIES+1))
+    done;
+
+    log_message "Failed to check service after $MAX_RETRY_COUNT attempts."
+    execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-${AFTER_COMPOSE_COLOR} -f ${PROJECT_ROOT}/docker-compose.${AFTER_COMPOSE_COLOR}.yml down"
+    log_message "### DEPLOY FAILED ###"
+    exit 1
+}
+
+# 이전 컨테이너 종료 함수
+down_container() {
+    execute_and_log "docker-compose -p ${DOCKER_APP_NAME}-${BEFORE_COMPOSE_COLOR} -f ${PROJECT_ROOT}/docker-compose.${BEFORE_COMPOSE_COLOR}.yml down"
+    log_message "### $BEFORE_COMPOSE_COLOR DOWN ###"
+}
 
 #execute_and_log "docker ps -a"
 #
@@ -97,13 +100,21 @@ fi
 #    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose.yml up -d --build"
 #fi
 
-#실행 중인 Docker 컨테이너 확인
+# 메인 스크립트 실행
+log_message "배포 시작"
+
+execute_and_log "docker ps -a"
+
+switch_containe
+
 CURRENT_PID=$(docker ps | grep $DOCKER_APP_NAME | awk '{print $1}')
 if [ -z "$CURRENT_PID" ]; then
     log_message "실행된 프로세스를 찾을 수 없습니다."
 else
     log_message "실행된 프로세스 아이디는 $CURRENT_PID 입니다."
 fi
+
+down_container
 
 log_message "배포 종료"
 log_message "===================== 배포 완료 ====================="
