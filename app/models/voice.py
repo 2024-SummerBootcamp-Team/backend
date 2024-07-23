@@ -13,6 +13,6 @@ class Voice(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     content = Column(Text, nullable=False)
     audio_url = Column(String(500), nullable=False)
-
+    v_count = Column(Integer, default=1,nullable=False)
     bubble = relationship("Bubble", back_populates="voices")
 

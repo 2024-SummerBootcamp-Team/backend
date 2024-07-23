@@ -14,5 +14,5 @@ class Image(Base):
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     content = Column(Text, nullable=False)
     image_url = Column(String(500), nullable=False)
-
+    i_count=Column(Integer, default=1, nullable=False)
     bubble = relationship("Bubble", back_populates="images")

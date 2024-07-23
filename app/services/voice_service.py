@@ -29,32 +29,32 @@ def get_voices(db: Session, skip: int = 0, limit: int = 100):
 def get_voices_by_chat_id(db: Session, chat_id: int):
     voices = db.query(Voice).join(Voice.bubble).filter(Bubble.chat_id == chat_id, Voice.is_deleted == False).all()
     return [VoiceDetail(
-            id=voice.id,
-            chat_id=voice.bubble.chat_id,
-            character=voice.bubble.chat.character.name,
-            character_image=voice.bubble.chat.character.image_url,
-            bubble_id=voice.bubble_id,
-            audio_url=voice.audio_url,
-            content=voice.content,
-            created_at=voice.created_at
-        ) for voice in voices]
+        id=voice.id,
+        chat_id=voice.bubble.chat_id,
+        character=voice.bubble.chat.character.name,
+        character_image=voice.bubble.chat.character.image_url,
+        bubble_id=voice.bubble_id,
+        audio_url=voice.audio_url,
+        content=voice.content,
+        created_at=voice.created_at
+    ) for voice in voices]
 
 
 # 단일 목소리 상세 조회
-def get_voice(db: Session, voice_id: int):
+def get_voice_detail(db: Session, voice_id: int):
     voice = db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     return VoiceDetail(
-            id=voice.id,
-            chat_id=voice.bubble.chat_id,
-            character=voice.bubble.chat.character.name,
-            character_image=voice.bubble.chat.character.image_url,
-            bubble_id=voice.bubble_id,
-            audio_url=voice.audio_url,
-            content=voice.content,
-            created_at=voice.created_at
-        )
+        id=voice.id,
+        chat_id=voice.bubble.chat_id,
+        character=voice.bubble.chat.character.name,
+        character_image=voice.bubble.chat.character.image_url,
+        bubble_id=voice.bubble_id,
+        audio_url=voice.audio_url,
+        content=voice.content,
+        created_at=voice.created_at
+    )
 
 
 # 저장한 목소리 하드 삭제
@@ -88,3 +88,17 @@ def create_voice(db: Session, bubble_id: int, audio_url: str):
     db.commit()
     db.refresh(voice)
     return voice
+
+
+# 목소리 모델 가져오기
+def get_voice(db: Session, voice_id: int):
+    return db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+
+
+# 목소리 카운트 증가시키기
+def get_voice_count(db: Session, voice_id: int):
+    voice = db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+    if voice:
+        voice.v_count += 1
+        db.commit()
+        db.refresh(voice)
