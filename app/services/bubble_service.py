@@ -4,6 +4,7 @@ from datetime import timedelta
 from io import BytesIO
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.config.langChain.langChainSetting import runnable_with_history
@@ -108,7 +109,6 @@ async def create_bubble(chat_id: int, content: str, db: Session):
             yield f"data: {message}\n\n"
             raise Exception(message)
 
-
     # Save the final AI message to the database
     ai_message, audio_data = await gpt_task
     db_bubble_ai = Bubble(chat_id=chat_id, writer=0, content=ai_message)
@@ -123,3 +123,10 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     redis_client.setex(str(db_bubble_ai.id), timedelta(seconds=600), audio_data_bytes)  # 생성과 동시에 10초뒤에 사라짐
 
     yield f"data: {json.dumps({'bubble_id': str(db_bubble_ai.id)})}\n\n"
+
+    # 해당 채팅방의 버블 수가 5쌍(10개)째일 경우 토픽 분석 + 첫 대화일 경우
+    bubble_count = db.query(func.count(Bubble.id)).filter(Bubble.chat_id == chat_id).scalar()
+    if bubble_count == 2 or bubble_count % 10 == 0:
+        topic = chat_service.get_chat_topic(db, chat_id)
+        print("topic", topic)
+        # yield f"data: {json.dumps({'topic': topic})}\n\n"
