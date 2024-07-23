@@ -79,7 +79,7 @@ health_check() {
         local RESPONSE=$(curl -s "$URL")
         if [ -n "$RESPONSE" ]; then
             local STATUS=$(echo "$RESPONSE" | jq -r '.status')
-            if [ "$STATUS" = "UP" ]; then
+            if [ "$STATUS" = "ok" ]; then
                 log_message "health check success"
                 return 0
             fi
