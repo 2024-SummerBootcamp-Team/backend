@@ -9,7 +9,6 @@ from app.config.aws.s3Client import upload_voice
 
 from app.schemas.voice import VoiceDetail, VoiceDetailList
 
-
 router = APIRouter(
     prefix="/voices",
     tags=["Voices"]
@@ -44,7 +43,8 @@ async def create_voice(bubble_id: int, db: Session = Depends(get_db)):
 
 
 # 채팅방 별 저장한 목소리 목록 조회
-@router.get("/chat/{chat_id}", response_model=ResultResponseModel, summary="채팅방 별 목소리 목록 조회", description="특정 채팅방에서 저장된 목소리 목록을 조회합니다.")
+@router.get("/chat/{chat_id}", response_model=ResultResponseModel, summary="채팅방 별 목소리 목록 조회",
+            description="특정 채팅방에서 저장된 목소리 목록을 조회합니다.")
 def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
     chat_service.get_chat_room(db, chat_id=chat_id)
     voices = voice_service.get_voices_by_chat_id(db, chat_id=chat_id)
@@ -52,7 +52,8 @@ def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
 
 
 # 저장한 목소리 상세 조회
-@router.get("/{voice_id}", response_model=ResultResponseModel, summary="저장한 목소리 상세 조회", description="특정 목소리의 상세 정보를 조회합니다.")
+@router.get("/{voice_id}", response_model=ResultResponseModel, summary="저장한 목소리 상세 조회",
+            description="특정 목소리의 상세 정보를 조회합니다.")
 def read_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice_detail(db, voice_id=voice_id)
     return ResultResponseModel(code=200, message="목소리 상세 정보를 조회했습니다.", data=voice)
@@ -69,19 +70,22 @@ def soft_delete_voice(voice_id: int, db: Session = Depends(get_db)):
 
 
 # 저장한 목소리 하드 삭제
-@router.delete("/{voice_id}", response_model=ResultResponseModel, summary="목소리 하드 삭제", description="특정 목소리를 DB에서 삭제합니다.")
+@router.delete("/{voice_id}", response_model=ResultResponseModel, summary="목소리 하드 삭제",
+               description="특정 목소리를 DB에서 삭제합니다.")
 def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.hard_delete_voice(db, voice_id=voice_id)
     return ResultResponseModel(code=200, message="목소리를 DB에서 삭제했습니다.", data=None)
+
+
 #목소리 다운로드 수
-@router.post("/download_count/{voice_id}",response_model=ResultResponseModel, summary="목소리 다운로드 수", description="목소리 다운로드 수를 알려줍니다")
+@router.post("/download_count/{voice_id}", response_model=ResultResponseModel, summary="목소리 다운로드 수",
+             description="목소리 다운로드 수를 알려줍니다")
 def download_voice_count(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.get_voice_count(db, voice_id=voice_id)
     return ResultResponseModel(code=200, message="목소리 카운트가 올라갔습니다.", data=voice.v_count)
-
