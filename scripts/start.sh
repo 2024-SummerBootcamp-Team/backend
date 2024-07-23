@@ -40,7 +40,7 @@ fi
 # 컨테이너가 없다면 실행할 함수
 init_container() {
     log_message "### INITIALIZING CONTAINER ###"
-    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose-deploy.yml up -d --build --scale fastapi-green=0"
+    execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose-deploy.yml up -d --build --scale fastapi-blue=0"
 }
 
 # 컨테이너 스위칭 함수
