@@ -76,7 +76,8 @@ def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.hard_delete_voice(db, voice_id=voice_id)
     return ResultResponseModel(code=200, message="목소리를 DB에서 삭제했습니다.", data=None)
-@router.post("/download_count/{voice_id}",response_model=ResultResponseModel)
+#목소리 다운로드 수
+@router.post("/download_count/{voice_id}",response_model=ResultResponseModel, summary="목소리 다운로드 수", description="목소리 다운로드 수를 알려줍니다")
 def download_voice_count(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice_model(db, voice_id=voice_id)
     if not voice:
