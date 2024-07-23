@@ -24,6 +24,7 @@ def get_chat_room(db: Session, chat_id: int):
         id=chat.id,
         character_id=chat.character_id,
         character_name=chat.character.name,
+        topic=chat.topic,
         created_at=chat.created_at,
         name=chat.name
     )

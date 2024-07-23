@@ -6,6 +6,7 @@ class ChatRoomBase(BaseModel):
     id: int
     character_id: int
     character_name: str
+    topic: str
     created_at: datetime
     name: str
 
