@@ -66,3 +66,12 @@ def get_samples(db: Session, character_name: str):
         raise HTTPException(status_code=404, detail="캐릭터 정보를 불러오는데 실패했습니다.")
     images = list_images_in_directory(character_name)
     return images
+
+
+# 이미지 카운트 수
+def get_image_count(db: Session, image_id: int):
+    image = db.query(Image).filter(Image.id == image_id, Image.is_deleted == False).first()
+    if image:
+        image.i_count += 1
+        db.commit()
+        db.refresh(image)
