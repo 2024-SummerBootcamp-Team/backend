@@ -9,18 +9,7 @@ services:
       - SERVER_NAME=green
     ports:
       - "8000:8000"
-    develop:
-      watch:
-        - action: sync
-          path: app/
-          target: app/
-          ignore:
-            - venv/
-            - __pycache__/
-        - action: rebuild
-          path: app/requirements.txt
-          target: app/
-      restart: always
+    restart: always
     networks:
       - teamhnet
 
