@@ -45,7 +45,7 @@ init_container() {
 
 # 컨테이너 스위칭 함수
 switch_container() {
-    local IS_BLUE=$(docker-compose -p "${DOCKER_APP_NAME}" -f ${PROJECT_ROOT}/docker-compose-deploy.yml ps | grep fastapi-blue)
+    local IS_BLUE=$(docker compose -p "${DOCKER_APP_NAME}" -f ${PROJECT_ROOT}/docker-compose-deploy.yml ps | grep fastapi-blue)
     # IS_BLUE 변수에 fastapi-blue가 없다면
     if [ -z "$IS_BLUE" ]; then
         log_message "### GREEN => BLUE ###"
