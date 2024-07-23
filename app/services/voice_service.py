@@ -88,3 +88,12 @@ def create_voice(db: Session, bubble_id: int, audio_url: str):
     db.commit()
     db.refresh(voice)
     return voice
+
+def get_voice_model(db: Session, voice_id: int):
+    return db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+def get_voice_count(db: Session, voice_id: int):
+    voice = db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+    if voice:
+        voice.v_count += 1
+        db.commit()
+        db.refresh(voice)

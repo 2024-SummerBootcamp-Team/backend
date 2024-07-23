@@ -85,3 +85,10 @@ def hard_delete_image(image_id: int, db: Session = Depends(get_db)):
 def read_samples(character_name: str, db: Session = Depends(get_db)):
     images = image_service.get_samples(db, character_name=character_name)
     return ResultResponseModel(code=200, message="샘플 배경 이미지 목록을 조회했습니다.", data=images)
+@router.post("/download_count/{image_id}", response_model=ResultResponseModel)
+def download_image_count(image_id: int, db: Session = Depends(get_db)):
+    image = image_service.get_image(db, image_id=image_id)
+    if not image:
+        raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
+    image_service.get_image_count(db, image_id=image_id)
+    return ResultResponseModel(code=200, message="목소리 카운트가 올라갔습니다.", data=image.i_count)
