@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+from sqlalchemy import func
 
 from app.models.chat import Chat
 from sqlalchemy.orm import Session
@@ -35,8 +36,8 @@ def get_bubbles(db: Session, chat_id: int,skip: int = 0, limit: int = 100):
                 category=bubble.category,
                 content=bubble.content,
                 created_at=bubble.created_at,
-                tts_count=db.query(Voice).filter(Voice.bubble_id == bubble.id).count(),
-                image_count=db.query(Image).filter(Image.bubble_id == bubble.id).count()
+                tts_count=db.query(func.count(Voice.id)).filter(Voice.bubble_id == bubble.id).scalar(),
+                image_count=db.query(func.count(Image.id)).filter(Image.bubble_id == bubble.id).scalar()
             )
             for bubble in bubbles
         ]
