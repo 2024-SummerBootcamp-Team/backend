@@ -67,6 +67,7 @@ def get_samples(db: Session, character_name: str):
     images = list_images_in_directory(character_name)
     return images
 
+# 이미지 카운트 수
 def get_image_count(db:Session, image_id: int):
     image = db.query(Image).filter(Image.id == image_id, Image.is_deleted == False).first()
     if image:

@@ -54,7 +54,7 @@ def read_voices_in_chat_room(chat_id: int, db: Session = Depends(get_db)):
 # 저장한 목소리 상세 조회
 @router.get("/{voice_id}", response_model=ResultResponseModel, summary="저장한 목소리 상세 조회", description="특정 목소리의 상세 정보를 조회합니다.")
 def read_voice(voice_id: int, db: Session = Depends(get_db)):
-    voice = voice_service.get_voice(db, voice_id=voice_id)
+    voice = voice_service.get_voice_detail(db, voice_id=voice_id)
     return ResultResponseModel(code=200, message="목소리 상세 정보를 조회했습니다.", data=voice)
 
 
@@ -79,7 +79,7 @@ def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
 #목소리 다운로드 수
 @router.post("/download_count/{voice_id}",response_model=ResultResponseModel, summary="목소리 다운로드 수", description="목소리 다운로드 수를 알려줍니다")
 def download_voice_count(voice_id: int, db: Session = Depends(get_db)):
-    voice = voice_service.get_voice_model(db, voice_id=voice_id)
+    voice = voice_service.get_voice(db, voice_id=voice_id)
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
     voice_service.get_voice_count(db, voice_id=voice_id)

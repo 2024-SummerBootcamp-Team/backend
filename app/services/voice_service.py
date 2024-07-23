@@ -41,7 +41,7 @@ def get_voices_by_chat_id(db: Session, chat_id: int):
 
 
 # 단일 목소리 상세 조회
-def get_voice(db: Session, voice_id: int):
+def get_voice_detail(db: Session, voice_id: int):
     voice = db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
     if not voice:
         raise HTTPException(status_code=404, detail="목소리 정보를 불러오는데 실패했습니다.")
@@ -89,8 +89,10 @@ def create_voice(db: Session, bubble_id: int, audio_url: str):
     db.refresh(voice)
     return voice
 
-def get_voice_model(db: Session, voice_id: int):
+# 목소리 모델 가져오기
+def get_voice(db: Session, voice_id: int):
     return db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+# 목소리 카운트 증가시키기
 def get_voice_count(db: Session, voice_id: int):
     voice = db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
     if voice:
