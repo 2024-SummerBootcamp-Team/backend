@@ -23,8 +23,6 @@ services:
       - teamhnet
 
 
-
-
   redis:
     container_name: redis
     image: redis
@@ -75,58 +73,53 @@ services:
       - teamhnet
 
 
-
-  elasticsearch:
-    container_name: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
-    environment:
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-
-    networks:
-      - teamhnet
-
-
-
-  logstash:
-    container_name: logstash
-    image: docker.elastic.co/logstash/logstash:7.17.4
-    ports:
-      - "5044:5044"
-    volumes:
-      - ./monitoring/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./monitoring/elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
-
-    networks:
-      - teamhnet
-
-
-
-  kibana:
-    container_name: kibana
-    image: docker.elastic.co/kibana/kibana:7.17.4
-    ports:
-      - "5601:5601"
-    environment:
-      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
-
-    networks:
-      - teamhnet
-
-
-
-
-  filebeat:
-    container_name: filebeat
-    image: docker.elastic.co/beats/filebeat:7.17.4
-    volumes:
-      - ./monitoring/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml  # 경로 수정
-      - ./app/logs:/app/logs:ro
-    depends_on:
-      - logstash
-    networks:
-      - teamhnet
+#  elasticsearch:
+#    container_name: elasticsearch
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.4
+#    environment:
+#      - discovery.type=single-node
+#    ports:
+#      - "9200:9200"
+#
+#    networks:
+#      - teamhnet
+#
+#
+#  logstash:
+#    container_name: logstash
+#    image: docker.elastic.co/logstash/logstash:7.17.4
+#    ports:
+#      - "5044:5044"
+#    volumes:
+#      - ./monitoring/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+#      - ./monitoring/elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+#
+#    networks:
+#      - teamhnet
+#
+#
+#  kibana:
+#    container_name: kibana
+#    image: docker.elastic.co/kibana/kibana:7.17.4
+#    ports:
+#      - "5601:5601"
+#    environment:
+#      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+#
+#    networks:
+#      - teamhnet
+#
+#
+#  filebeat:
+#    container_name: filebeat
+#    image: docker.elastic.co/beats/filebeat:7.17.4
+#    volumes:
+#      - ./monitoring/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml  # 경로 수정
+#      - ./app/logs:/app/logs:ro
+#    depends_on:
+#      - logstash
+#    networks:
+#      - teamhnet
 
 
 networks:
