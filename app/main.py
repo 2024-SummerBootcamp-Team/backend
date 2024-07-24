@@ -4,6 +4,7 @@ from starlette.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 import logging
 
+from .config.health import checker
 from .routers import api
 
 # FastAPI를 실행하기 위해 인스턴스 생성
@@ -39,6 +40,7 @@ instrumentator.expose(app, include_in_schema=False)
 - 클라이언트로부터 요청을 받았을 때, 해당 요청을 처리할 수 있는 함수를 매핑하는 것
 """
 app.include_router(api.router)
+app.include_router(checker.router) # healthchecker - api
 
 watchfiles_logger = logging.getLogger('watchfiles')
 watchfiles_logger.setLevel(logging.WARNING)
