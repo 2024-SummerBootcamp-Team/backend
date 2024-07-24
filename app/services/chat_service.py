@@ -89,8 +89,8 @@ def get_chat_spicy(db: Session, chat_id: int):
     chat = get_chat(db, chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
-    # 새로 찾아낸 매운맛과 원래 채팅방에 저장되어 있는 주제가 다른 경우 주제 업데이트
-    elif chat.spicy != spicy.content:  # 갱신된 토픽이 기존과 다를 경우 업데이트
+    # 새로 찾아낸 매운맛과 원래 채팅방에 저장되어 있는 매운맛 다른 경우 매운맛 업데이트
+    elif chat.spicy != spicy.content:  # 갱신된 매운맛이 기존과 다를 경우 업데이트
         chat.spicy = spicy.content
         db.commit()
         db.refresh(chat)
