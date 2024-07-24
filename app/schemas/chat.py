@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 from datetime import datetime
 
@@ -6,6 +8,7 @@ class ChatRoomBase(BaseModel):
     id: int
     character_id: int
     character_name: str
+    topic: Optional[str] = None
     created_at: datetime
     name: str
 
