@@ -75,7 +75,7 @@ def create_message(chat_id: int, message: str, db: Session = Depends(get_db)):
 @router.post("/chat/{chat_id}/spiciness")
 def calculate_spiciness(chat_id: int, db: Session = Depends(get_db)):
     update_spicy_index(db, chat_id)
-    return {"status": "spiciness index updated"}
+    return {"status": "spiciy index updated"}
 
 # 채팅방 정보 조회
 @router.get("/{chat_id}", response_model=ResultResponseModel, summary="단일 채팅방 정보 조회",

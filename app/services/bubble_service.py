@@ -124,6 +124,13 @@ async def create_bubble(chat_id: int, content: str, db: Session):
 
     yield f"data: {json.dumps({'bubble_id': str(db_bubble_ai.id)})}\n\n"
 
+    # 해당 채팅방의 버블 수가 5쌍(10개)째일 경우 토픽 분석 + 첫 대화일 경우
+    bubble_count = db.query(func.count(Bubble.id)).filter(Bubble.chat_id == chat_id).scalar()
+    if bubble_count == 2 or bubble_count % 10 == 0:
+        topic = chat_service.get_chat_topic(db, chat_id)
+        print("topic", topic)
+        # yield f"data: {json.dumps({'topic': topic})}\n\n"
+
 # def create_bubble(db: Session, chat_id: int, content: str, spicy_score: int) -> Bubble:
 #     new_bubble = Bubble(chat_id=chat_id, content=content, spicy_score=spicy_score)  # 새로운 버블 객체 생성
 #     db.add(new_bubble)
