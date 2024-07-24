@@ -10,7 +10,7 @@ from app.config.redis.config import Config
 from app.database.session import get_db
 from app.schemas.response import ResultResponseModel
 from app.schemas.voice import VoiceCreateRequest
-from app.services import bubble_service, voice_service
+from app.services import bubble_service, voice_service, chat_service
 
 router = APIRouter(
     prefix="/tests",
@@ -66,3 +66,9 @@ def get_tts(audio_key: str):
         return StreamingResponse(audio_stream, media_type="audio/mpeg")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"TTS 데이터를 가져오는데 실패했습니다: {str(e)}")
+
+
+@router.get("/topic/{chat_id}", summary="[TEST] 채팅방 토픽 요약하기", description="채팅방의 최신 5개 버블을 통해 대화 주제를 요약합니다.")
+def get_topic(chat_id: int, db: Session = Depends(get_db)):
+    topic = chat_service.get_chat_topic(db, chat_id)
+    return ResultResponseModel(code=200, message="topic을 반환합니다.", data={"topic": topic})

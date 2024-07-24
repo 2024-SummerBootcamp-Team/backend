@@ -36,6 +36,7 @@ services:
     container_name: prometheus
     image: prom/prometheus:latest
     volumes:
+
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -79,6 +80,7 @@ services:
 #      - discovery.type=single-node
 #    ports:
 #      - "9200:9200"
+#
 #    networks:
 #      - teamhnet
 #
@@ -91,6 +93,7 @@ services:
 #    volumes:
 #      - ./monitoring/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
 #      - ./monitoring/elk/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+#
 #    networks:
 #      - teamhnet
 #
@@ -102,6 +105,7 @@ services:
 #      - "5601:5601"
 #    environment:
 #      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+#
 #    networks:
 #      - teamhnet
 #
@@ -120,3 +124,4 @@ services:
 
 networks:
   teamhnet:
+    driver: bridge
