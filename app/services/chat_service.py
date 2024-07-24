@@ -76,52 +76,22 @@ def get_chat_topic(db: Session, chat_id: int):
         db.refresh(chat)
     return chat.topic
 
-
-# spicy 추가 코드
-def update_chat_spiciness_using_gpt(db: Session, chat_id: int):
-    # 특정 채팅방의 모든 메시지를 불러옵니다.
+# 채팅방 매운맛 분석 및 업데이트
+def get_chat_spicy(db: Session, chat_id: int):
+    # 최신순으로 10개 가져오기 (5쌍)
+    bubbles = db.query(Bubble).filter(Bubble.chat_id == chat_id).order_by(Bubble.created_at.desc()).limit(10).all()
+    # 가져온 대화 10개 하나의 긴 문장으로 합치기
+    content = "\n\n".join(bubble.content for bubble in bubbles)
+    print("content: ", content)
+    # 합쳐진 문장에서 매운맛 찾기
+    spicy = spicy_chain.invoke({"input": content})
+    # 채팅방 정보 가져오기
     chat = get_chat(db, chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
-
-    content = chat.content
-
-    # GPT에게 매운맛 지수 요청
-    response = gpt_analyze_spicy({"input": content})
-    spicy_index = response.get("spicy_index", 0)  # GPT 응답에서 매운맛 지수를 가져옴
-
-    if chat.spicy_index != spicy_index:  # 갱신된 매운맛 지수가 기존과 다를 경우 업데이트
-        chat.spicy_index = spicy_index
+    # 새로 찾아낸 매운맛과 원래 채팅방에 저장되어 있는 주제가 다른 경우 주제 업데이트
+    elif chat.spicy != spicy.content:  # 갱신된 토픽이 기존과 다를 경우 업데이트
+        chat.spicy = spicy.content
         db.commit()
         db.refresh(chat)
-    return chat.spicy_index
-
-
-def handle_chat_message(db: Session, chat_id: int, message: str):
-    # 새로운 메시지를 Chat 테이블에 저장
-    chat = get_chat(db, chat_id)
-    if chat:
-        chat.content += "\n" + message
-    else:
-        chat = Chat(id=chat_id, content=message, spicy_index=0)
-        db.add(chat)
-    db.commit()
-
-
-def add_new_message(db: Session, chat_id: int, message: str):
-    # 메시지를 추가하고 저장
-    handle_chat_message(db, chat_id, message)
-
-    # 메시지 추가 후 매운맛 지수 업데이트
-    update_spicy(db, chat_id)
-
-
-def calculate_spicy(db: Session, chat_id: int):
-    # 요청 시 매운맛 지수를 계산하고 업데이트
-    spicy_index = update_spicy(db, chat_id)
-    print("spicy_index", spicy_index)
-
-
-def update_spicy(db: Session, chat_id: int):
-    # 매운맛 지수 업데이트 요청
-    calculate_spicy(db, chat_id)
+    return chat.spicy #업데이트 된 spicy 반환

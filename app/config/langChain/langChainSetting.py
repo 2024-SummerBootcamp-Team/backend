@@ -43,10 +43,6 @@ prompt = ChatPromptTemplate.from_messages(
          ),  # 시스템 메시지를 템플릿에 추가
         MessagesPlaceholder(variable_name="chat_history"),  # 메시지 히스토리
         ("human", "{input}")  # 사용자 메시지
-        ("system", """
-        이제, 네가 방금 한 대답이 얼마나 독한지 1에서 10까지의 점수로 평가해줘.
-            1은 전혀 독하지 않은 것이고, 10은 매우 독한 것이다. 점수만 숫자로 대답해줘.
-        """)
     ]
 )
 
@@ -92,3 +88,15 @@ prompt_topic = ChatPromptTemplate.from_messages(
     ]
 )
 topic_chain = RunnablePassthrough() | prompt_topic | llm
+
+# 채팅방 매운맛 분석
+prompt_spicy = ChatPromptTemplate.from_messages(
+    [
+        ("system", """
+                    대화 내용을 주면 그 내용을 분석해서 대화 내용 중 독한말의 정도를 정수 1부터 10까지 중 한가지 선택해서 말해줘 숫자가 클수록 대화 내용의 독한말 정도가 큰거야 .
+                    """
+         ),
+        ("human", "{input}")  # 사용자 메시지
+    ]
+)
+spicy_chain = RunnablePassthrough() | prompt_spicy | llm
