@@ -1,8 +1,9 @@
 from fastapi import HTTPException
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
 from app.config.aws.s3Client import list_images_in_directory
-from app.models import Bubble
+from app.models import Bubble, Character, Chat
 from app.models.image import Image
 from app.schemas.image import ImageDetail
 from app.models.image import Image as ImageModel
@@ -24,7 +25,7 @@ def get_images(db: Session, skip: int = 0, limit: int = 100):
     return images_details
 
 
-# 채팅방 별 목소리 목록 조회
+# 채팅방 별 이미지 목록 조회
 def get_images_by_chat_id(db: Session, chat_id: int):
     return db.query(Image).join(Image.bubble).filter(Bubble.chat_id == chat_id, Image.is_deleted == False).all()
 
@@ -75,3 +76,15 @@ def get_image_count(db: Session, image_id: int):
         image.i_count += 1
         db.commit()
         db.refresh(image)
+
+
+# 다운로드 횟수 기준으로 5개 출력
+def get_top_10_images_by_character(db: Session, character_id: int):
+    return (db.query(Image)
+            .join(Image.bubble)  # Image와 Bubble 간의 관계 조인
+            .join(Bubble.chat)  # Bubble과 Chat 간의 관계 조인
+            .join(Chat.character)  # Chat과 Character 간의 관계 조인
+            .filter(Character.id == character_id, Image.is_deleted == False)
+            .order_by(desc(Image.i_count))
+            .limit(5)
+            .all())

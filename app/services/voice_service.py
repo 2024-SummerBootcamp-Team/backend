@@ -1,6 +1,8 @@
 from fastapi import HTTPException
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 
+from app.models import Character, Chat
 from app.models.bubble import Bubble
 from app.models.voice import Voice
 from app.schemas.voice import VoiceDetail
@@ -102,3 +104,15 @@ def get_voice_count(db: Session, voice_id: int):
         voice.v_count += 1
         db.commit()
         db.refresh(voice)
+
+
+# 다운로드 횟수 기준으로 10개 출력
+def get_top_10_voices_by_character(db: Session, character_id: int):
+    return (db.query(Voice)
+            .join(Voice.bubble)  # Image와 Bubble 간의 관계 조인
+            .join(Bubble.chat)  # Bubble과 Chat 간의 관계 조인
+            .join(Chat.character)  # Chat과 Character 간의 관계 조인
+            .filter(Character.id == character_id, Voice.is_deleted == False)
+            .order_by(desc(Voice.v_count))
+            .limit(5)
+            .all())

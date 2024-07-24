@@ -38,11 +38,13 @@ class CharacterInfo(BaseModel):
 class ImageInfo(BaseModel):
     id: int
     url: str
+    download: int
 
 class VoiceInfo(BaseModel):
     id: int
     content: str
     url: str
+    download: int
 
 class DashboardCharacter(BaseModel):
     info: CharacterInfo
