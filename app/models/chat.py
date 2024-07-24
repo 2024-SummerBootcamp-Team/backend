@@ -14,6 +14,7 @@ class Chat(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     updated_at = Column(DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     name = Column(String(45), nullable=False)
+    spicy = Column(Integer, nullable=True)
 
     character = relationship("Character", back_populates="chats")
     bubbles = relationship("Bubble", back_populates="chat")

@@ -23,6 +23,6 @@ class BubbleRequest(BaseModel):
     class Config:
         from_attributes = True
 
-class BubbleRequest(BaseModel)
-    content: str
-    spicy_score: int # AI로부터 반환되는 spicy_score 필드 추가
+# class BubbleRequest(BaseModel)
+#     content: str
+#     spicy_score: int # AI로부터 반환되는 spicy_score 필드 추가
