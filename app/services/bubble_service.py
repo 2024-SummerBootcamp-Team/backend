@@ -128,7 +128,9 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     bubble_count = db.query(func.count(Bubble.id)).filter(Bubble.chat_id == chat_id).scalar()
     if bubble_count == 2 or bubble_count % 10 == 0:
         topic = chat_service.get_chat_topic(db, chat_id)
+        spicy = chat_service.get_chat_spicy(db, chat_id)
         print("topic", topic)
+        print("spicy", spicy)
         # yield f"data: {json.dumps({'topic': topic})}\n\n"
 
 

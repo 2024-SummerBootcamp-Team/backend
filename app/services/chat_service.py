@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy import func
 
-from app.config.langChain.langChainSetting import topic_chain
+from app.config.langChain.langChainSetting import topic_chain, spicy_chain
 from app.models.chat import Chat
 from sqlalchemy.orm import Session
 from app.models.voice import Voice
