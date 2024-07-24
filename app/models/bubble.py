@@ -15,6 +15,7 @@ class Bubble(Base):
     writer = Column(Boolean, nullable=False, server_default="0")  # AI (0) or User (1)
     category = Column(Boolean, nullable=False, server_default="0")  # Image (0) or Text (1)
     content = Column(Text, nullable=False)
+    spicy = Column(Integer, nullable=True)
 
     chat = relationship("Chat", back_populates="bubbles")
     voices = relationship("Voice", back_populates="bubble")

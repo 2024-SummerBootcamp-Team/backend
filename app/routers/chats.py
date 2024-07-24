@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
+from ..models import Bubble
 from ..schemas.response import ResultResponseModel
 from ..services import chat_service
 from ..database.session import get_db
@@ -32,12 +34,35 @@ def create_chat_room(req: ChatRoomCreateRequest, db: Session = Depends(get_db)):
 async def create_bubble(chat_id: int, req: BubbleRequest, db: Session = Depends(get_db)):
     chat_service.get_chat_room(db, chat_id=chat_id)
     try:
+        #AI 답변 생성
+        response_content = await bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content)
+
         response = StreamingResponse(bubble_service.create_bubble(db=db, chat_id=chat_id, content=req.content),
                                      media_type="text/event-stream")
+
+        # AI 답변과 함께 매운맛 점수를 반환한다고 가정
+        response_content = response['content']
+        spicy_score = response['spicy_score']
+
+        # Bubble 생성 및 저장
+        bubble = Bubble(chat_id=chat_id, content=response_content, spicy_score=spicy_score)
+        db.add(bubble)
+        db.commit()
+
         return response
     except Exception as e:
         raise HTTPException(status_code=404, detail="채팅하기에 실패했습니다.")
 
+# 독한말 매운 맛 점수화
+@router.get("/{chat_id}/spicy", response_model=ResultResponseModel, summary="채팅방 대화 내용의 매운 맛 점수 조회",
+            description="채팅방의 대화 내용에 대한 매운 맛 점수를 조회합니다.")
+def get_spicy_score(chat_id: int, db: Session = Depends(get_db)):
+    bubbles = db.query(Bubble).filter(Bubble.chat_id == chat_id).all()
+    if not bubbles:
+        raise HTTPException(status_code=404, detail="채팅방을 찾을 수 없습니다.")
+
+    bubble_data = [{"content": bubble.content, "spicy_score": bubble.spicy_score} for bubble in bubbles]
+    return ResultResponseModel(code=200, message="버블 리스트를 조회했습니다.", data=bubble_data)
 
 # 채팅방 정보 조회
 @router.get("/{chat_id}", response_model=ResultResponseModel, summary="단일 채팅방 정보 조회",

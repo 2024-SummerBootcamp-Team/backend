@@ -123,3 +123,10 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     redis_client.setex(str(db_bubble_ai.id), timedelta(seconds=600), audio_data_bytes)  # 생성과 동시에 10초뒤에 사라짐
 
     yield f"data: {json.dumps({'bubble_id': str(db_bubble_ai.id)})}\n\n"
+
+def create_bubble(db: Session, chat_id: int, content: str, spicy_score: int) -> Bubble:
+    new_bubble = Bubble(chat_id=chat_id, content=content, spicy_score=spicy_score)  # 새로운 버블 객체 생성
+    db.add(new_bubble)
+    db.commit()
+    db.refresh(new_bubble)  # 새로운 버블 객체를 데이터베이스에 저장 및 갱신
+    return new_bubble

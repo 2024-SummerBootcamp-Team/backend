@@ -43,6 +43,10 @@ prompt = ChatPromptTemplate.from_messages(
          ),  # 시스템 메시지를 템플릿에 추가
         MessagesPlaceholder(variable_name="chat_history"), # 메시지 히스토리
         ("human", "{input}")  # 사용자 메시지
+        ("system", """
+        이제, 네가 방금 한 대답이 얼마나 독한지 1에서 10까지의 점수로 평가해줘.
+            1은 전혀 독하지 않은 것이고, 10은 매우 독한 것이다. 점수만 숫자로 대답해줘.
+        """)
     ]
 )
 
