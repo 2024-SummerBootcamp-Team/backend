@@ -79,7 +79,7 @@ def get_image_count(db: Session, image_id: int):
 
 
 # 다운로드 횟수 기준으로 5개 출력
-def get_top_10_images_by_character(db: Session, character_id: int):
+def get_top_images_by_character(db: Session, character_id: int):
     return (db.query(Image)
             .join(Image.bubble)  # Image와 Bubble 간의 관계 조인
             .join(Bubble.chat)  # Bubble과 Chat 간의 관계 조인

@@ -107,7 +107,7 @@ def get_voice_count(db: Session, voice_id: int):
 
 
 # 다운로드 횟수 기준으로 10개 출력
-def get_top_10_voices_by_character(db: Session, character_id: int):
+def get_top_voices_by_character(db: Session, character_id: int):
     return (db.query(Voice)
             .join(Voice.bubble)  # Image와 Bubble 간의 관계 조인
             .join(Bubble.chat)  # Bubble과 Chat 간의 관계 조인

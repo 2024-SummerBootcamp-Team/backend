@@ -60,8 +60,8 @@ def get_dashboard_character(db: Session, character_name: str):
     character = get_character_by_name(db, character_name)
     if not character:
         raise HTTPException(status_code=404, detail="캐릭터를 찾을 수 없습니다.")
-    images = image_service.get_top_10_images_by_character(db, character.id)
-    voices = voice_service.get_top_10_voices_by_character(db, character.id)
+    images = image_service.get_top_images_by_character(db, character.id)
+    voices = voice_service.get_top_voices_by_character(db, character.id)
     return DashboardCharacter(
         info=CharacterInfo(
             id=character.id,
