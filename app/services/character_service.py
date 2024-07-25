@@ -111,6 +111,7 @@ def get_dashboard_character(db: Session, character_name: str):
         info=CharacterInfo(
             id=character.id,
             name=character.name,
+            image=character.image_url,
             description="설명"
         ),
         top_images=[
