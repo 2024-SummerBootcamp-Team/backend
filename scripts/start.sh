@@ -56,6 +56,9 @@ switch_container() {
         sleep 30
 
         health_check "http://127.0.0.1:8001/healthcheck"
+        execute_and_log "cp ${PROJECT_ROOT}/nginx/configs/nginx-blue.conf ${PROJECT_ROOT}/nginx/configs/nginx.conf"
+        execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose-deploy.yml restart nginx"
+
     else
         log_message "### BLUE => GREEN ###"
         execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose-deploy.yml up -d --build fastapi-green"
@@ -65,6 +68,9 @@ switch_container() {
         sleep 30
 
         health_check "http://127.0.0.1:8000/healthcheck"
+
+        execute_and_log "cp ${PROJECT_ROOT}/nginx/configs/nginx-green.conf ${PROJECT_ROOT}/nginx/configs/nginx.conf"
+        execute_and_log "docker compose -p ${DOCKER_APP_NAME} -f ${PROJECT_ROOT}/docker-compose-deploy.yml restart nginx"
     fi
 }
 
