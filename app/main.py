@@ -21,7 +21,7 @@ app = FastAPI(
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 모든 도메인에서의 요청을 허용
+    allow_origins=["http://localhost:5173", "https://brain-washer.net/"],  # 모든 도메인에서의 요청을 허용
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # 허용할 메서드들 설정
     allow_headers=["*"],  # 모든 헤더를 허용
