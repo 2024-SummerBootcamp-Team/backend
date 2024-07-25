@@ -88,3 +88,17 @@ prompt_topic = ChatPromptTemplate.from_messages(
     ]
 )
 topic_chain = RunnablePassthrough() | prompt_topic | llm
+
+# 채팅방 매운맛 분석
+prompt_spicy = ChatPromptTemplate.from_messages(
+    [
+        ("system", """
+                    대화 내용을 주면 그 내용을 분석해서 대화 내용 중 독한말의 정도를 정수 1부터 10까지 중 한가지 선택해서 말해줘 숫자가 클수록 대화 내용의 독한말 정도가 큰거야 .
+                    
+                    이유는 붙이지 말고 정수 결과만 딱 반환해줘.
+                    """
+         ),
+        ("human", "{input}")  # 사용자 메시지
+    ]
+)
+spicy_chain = RunnablePassthrough() | prompt_spicy | llm

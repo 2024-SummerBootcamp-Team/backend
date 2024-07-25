@@ -128,5 +128,12 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     bubble_count = db.query(func.count(Bubble.id)).filter(Bubble.chat_id == chat_id).scalar()
     if bubble_count == 2 or bubble_count % 10 == 0:
         topic = chat_service.get_chat_topic(db, chat_id)
+        spicy = chat_service.get_chat_spicy(db, chat_id)
         print("topic", topic)
+        print("spicy", spicy)
         # yield f"data: {json.dumps({'topic': topic})}\n\n"
+
+
+# 대화 내용 최신순으로 가져오기
+def get_recent_bubbles(db: Session, chat_id: int, limit: int):
+    return db.query(Bubble).filter(Bubble.chat_id == chat_id).order_by(Bubble.created_at.desc()).limit(limit).all()
