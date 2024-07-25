@@ -1,0 +1,10 @@
+apiVersion: 1
+
+providers:
+  - name: Prometheus  # provider 이름
+    folder: Monitor  # 대시보드가 위치할 폴더 이름
+    type: file  # 대시보드 정보가 json 파일이기 때문에 고정
+    updateIntervalSeconds: 30  # 대시보드 새로고침 빈도
+    options:
+      # 대시보드 파일(json) 위치한 폴더 경로 (type이 file인 경우 필수)
+      path: /etc/grafana/provisioning/dashboards

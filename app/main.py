@@ -45,13 +45,13 @@ app.include_router(checker.router) # healthchecker - api
 watchfiles_logger = logging.getLogger('watchfiles')
 watchfiles_logger.setLevel(logging.WARNING)
 
-
-logging.basicConfig(
-    filename='/app/logs/app.log',  # 로그 파일 이름
-    level=logging.INFO,  # 로그 레벨을 INFO로 설정
-    format='%(asctime)s %(levelname)s %(name)s %(message)s'  # 로그 메시지 포맷
-
-)
+#elk 할때만 킴
+# logging.basicConfig(
+#     filename='/app/logs/app.log',  # 로그 파일 이름
+#     level=logging.INFO,  # 로그 레벨을 INFO로 설정
+#     format='%(asctime)s %(levelname)s %(name)s %(message)s'  # 로그 메시지 포맷
+#
+# )
 
 
 @app.middleware("http")
