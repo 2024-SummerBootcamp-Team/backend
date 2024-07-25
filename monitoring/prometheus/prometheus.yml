@@ -1,22 +1,11 @@
 global:
   scrape_interval: 15s
-#로컬에서
-#scrape_configs:
-#  - job_name: 'fastapi'
-#    metrics_path: /metrics
-#    static_configs:
-#      - targets: ['host.docker.internal:8000']
-#
-#  - job_name: 'cadvisor'
-#    static_configs:
-#      - targets: ['cadvisor:8080']
 
-# 무중단 배포?
 scrape_configs:
   - job_name: 'fastapi'
     metrics_path: /metrics
     static_configs:
-      - targets: ['host.docker.internal:8000', 'host.docker.internal:8001']
+      - targets: ['fastapi:8000', 'fastapi:8001']
 
   - job_name: 'cadvisor'
     static_configs:

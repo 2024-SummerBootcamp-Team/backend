@@ -19,8 +19,8 @@ def get_chat(db: Session, chat_id: int) -> Chat:
 
 
 # 채팅방 정보 조회
-def get_chat_room(db: Session, chat_id: int):
-    chat = db.query(Chat).filter(Chat.id == chat_id, Chat.is_deleted == False).first()
+def get_chat_room(db: Session, chat_id: int)-> ChatRoomBase:
+    chat=get_chat(db, chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="채팅방 정보를 불러오는데 실패했습니다.")
     return ChatRoomBase(
