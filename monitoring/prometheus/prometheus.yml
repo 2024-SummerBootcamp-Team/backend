@@ -5,7 +5,10 @@ scrape_configs:
   - job_name: 'fastapi'
     metrics_path: /metrics
     static_configs:
-      - targets: ['fastapi:8000', 'fastapi:8001']
+
+      - targets: ['host.docker.internal:8000']
+
+     # - targets: ['fastapi:8000', 'fastapi:8001']
 
 
   - job_name: 'cadvisor'
