@@ -1,3 +1,4 @@
+import random
 from io import BytesIO
 from datetime import timedelta
 
@@ -8,6 +9,7 @@ from starlette.responses import StreamingResponse
 from app.config.elevenlabs.text_to_speech_stream import text_to_speech_stream
 from app.config.redis.config import Config
 from app.database.session import get_db
+from app.models import Chat
 from app.schemas.response import ResultResponseModel
 from app.schemas.voice import VoiceCreateRequest
 from app.services import bubble_service, voice_service, chat_service

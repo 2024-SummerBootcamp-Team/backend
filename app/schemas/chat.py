@@ -9,6 +9,7 @@ class ChatRoomBase(BaseModel):
     character_id: int
     character_name: str
     topic: Optional[str] = None
+    spicy: Optional[int] = None
     created_at: datetime
     name: str
 
