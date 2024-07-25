@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy import func
 
 from app.config.langChain.langChainSetting import topic_chain, spicy_chain
+from app.models import Character
 from app.models.chat import Chat
 from sqlalchemy.orm import Session
 from app.models.voice import Voice
@@ -59,6 +60,11 @@ def create_chat_room(db: Session, chat_name: str, character_id: int):
     db.commit()
     db.refresh(chat)
     return chat
+
+
+# 캐릭터 별 채팅방 조회
+def get_char_by_character_id(db: Session, character_id: int):
+    return db.query(Chat).filter(Chat.character_id == character_id, Chat.is_deleted == False).all()
 
 
 # 채팅방 토픽 분석 및 업데이트

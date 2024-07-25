@@ -11,11 +11,11 @@ class TopicFrequency(BaseModel):
     연애: int = Field(alias="연애")
 
 class SpicyFrequency(BaseModel):
-    level_1_2: int = Field(alias="1-2")
+    level_0_2: int = Field(alias="0-2")
     level_2_4: int = Field(alias="2-4")
-    level_5_6: int = Field(alias="5-6")
-    level_7_8: int = Field(alias="7-8")
-    level_9_10: int = Field(alias="9-10")
+    level_4_6: int = Field(alias="4-6")
+    level_6_8: int = Field(alias="6-8")
+    level_8_10: int = Field(alias="8-10")
 
     class Config:
         populate_by_name = True # 필드 이름을 기준으로 값을 채움
