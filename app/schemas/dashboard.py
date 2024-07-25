@@ -34,6 +34,7 @@ class DashboardTotal(BaseModel):
 class CharacterInfo(BaseModel):
     id: int
     name: str
+    image: str
     description: str
 
 class ImageInfo(BaseModel):
