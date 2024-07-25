@@ -11,3 +11,18 @@ scrape_configs:
     static_configs:
       - targets: ['cadvisor:8080']
 
+# 무중단 배포?
+#scrape_configs:
+#  - job_name: 'fastapi-blue'
+#    metrics_path: /metrics
+#    static_configs:
+#      - targets: ['host.docker.internal:8000']
+#
+#  - job_name: 'fastapi-green'
+#    metrics_path: /metrics
+#    static_configs:
+#      - targets: ['host.docker.internal:8001']
+#
+#  - job_name: 'cadvisor'
+#    static_configs:
+#      - targets: ['cadvisor:8080']
