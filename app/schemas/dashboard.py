@@ -11,11 +11,11 @@ class TopicFrequency(BaseModel):
     연애: int = Field(alias="연애")
 
 class SpicyFrequency(BaseModel):
-    level_0_2: int = Field(alias="0-2")
-    level_2_4: int = Field(alias="2-4")
-    level_4_6: int = Field(alias="4-6")
-    level_6_8: int = Field(alias="6-8")
-    level_8_10: int = Field(alias="8-10")
+    level_0_20: int = Field(alias="0-20")
+    level_20_40: int = Field(alias="20-40")
+    level_40_60: int = Field(alias="40-60")
+    level_60_80: int = Field(alias="60-80")
+    level_80_100: int = Field(alias="80-100")
 
     class Config:
         populate_by_name = True # 필드 이름을 기준으로 값을 채움
@@ -34,6 +34,7 @@ class DashboardTotal(BaseModel):
 class CharacterInfo(BaseModel):
     id: int
     name: str
+    image: str
     description: str
 
 class ImageInfo(BaseModel):
