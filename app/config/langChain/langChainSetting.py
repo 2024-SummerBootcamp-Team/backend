@@ -46,7 +46,7 @@ prompt = ChatPromptTemplate.from_messages(
                     그러니까 진짜 세게 말해야지 너의 말을 조금이나마 들을거야.
                     
                     대답은 '' 같은 기호를 붙이지말고 대화 형식으로 대답해줘. 
-                    대답은 최대한 120자 내외로 나와야돼. 가상의 인물의 정보: {prompt}
+                    대답은 꼭 무슨일이 있어도 120자 내외로 나와야돼. 가상의 인물의 정보: {prompt}
                     """
          ),  # 시스템 메시지를 템플릿에 추가
         MessagesPlaceholder(variable_name="chat_history"),  # 메시지 히스토리
