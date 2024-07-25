@@ -70,7 +70,7 @@ def get_spicy_count(chats) -> dict:
 
 # 매운맛 점수 평균 구하기
 def get_spicy_average(db: Session, character_id: int):
-    chats = chat_service.get_char_by_character_id(db, character_id)
+    chats = chat_service.get_chat_by_character_id(db, character_id)
     if not chats:  # chats가 비어있으면 0.0을 반환합니다.
         return 0.0
     total_spicy = sum(chat.spicy if chat.spicy is not None else 0 for chat in chats)
@@ -84,6 +84,7 @@ def get_dashboard_total(db: Session):
         characters=[
             CharacterStats(
                 name=character.name,
+                chat_count=chat_service.get_chat_count(db, character.id),
                 topic_frequency=TopicFrequency(
                     취업=get_topic_count(db, character.id, "취업"),
                     학업=get_topic_count(db, character.id, "학업"),

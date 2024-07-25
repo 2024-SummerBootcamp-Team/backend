@@ -22,6 +22,7 @@ class SpicyFrequency(BaseModel):
 
 class CharacterStats(BaseModel):
     name: str
+    chat_count: int
     topic_frequency: TopicFrequency
     spicy_frequency: SpicyFrequency
 
