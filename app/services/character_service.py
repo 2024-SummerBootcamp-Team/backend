@@ -55,6 +55,8 @@ def get_spicy_count(chats) -> dict:
     }
     for chat in chats:
         spicy = chat.spicy
+        if spicy is None:
+            continue  # spicy가 None인 경우 해당 chat을 건너뜁니다.
         if 0 <= spicy < 2:
             spicy_count["0-2"] += 1
         elif 2 <= spicy < 4:
