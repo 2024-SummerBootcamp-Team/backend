@@ -20,13 +20,13 @@ def read_characters(db: Session = Depends(get_db), skip: int = 0, limit: int = 1
 
 
 # 대시보드
-@router.get("/dashboard/total", response_model=ResultResponseModel, summary="전체 캐릭터 통계", description="전체 캐릭터에 대한 통계를 조회합니다.")
+@router.get("/dashboards/total", response_model=ResultResponseModel, summary="전체 캐릭터 통계", description="전체 캐릭터에 대한 통계를 조회합니다.")
 def read_dashboard_total(db: Session = Depends(get_db)):
     result = character_service.get_dashboard_total(db)
     return ResultResponseModel(code=200, message="전체 캐릭터에 대한 통계를 조회했습니다.", data=result)
 
 
-@router.get("/dashboard/{character_name}", response_model=ResultResponseModel, summary="캐릭터 별 통계", description="캐릭터 별 통계를 조회합니다.")
+@router.get("/dashboards/{character_name}", response_model=ResultResponseModel, summary="캐릭터 별 통계", description="캐릭터 별 통계를 조회합니다.")
 def read_dashboard_character(character_name: str, db: Session = Depends(get_db)):
     result = character_service.get_dashboard_character(db, character_name)
     return ResultResponseModel(code=200, message="캐릭터에 대한 통계를 조회했습니다.", data=result)
