@@ -129,6 +129,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
     ports:
       - "80:80"
+    restart: always
     networks:
       - teamhnet
 
