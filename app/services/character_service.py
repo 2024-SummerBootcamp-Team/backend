@@ -37,36 +37,36 @@ def get_spicy_frequency(db: Session, character_id: int) -> SpicyFrequency:
     chats = db.query(Chat).filter(Chat.character_id == character_id).all()
     spicy_count = get_spicy_count(chats)
     return SpicyFrequency(
-        level_0_2=spicy_count["0-2"],
-        level_2_4=spicy_count["2-4"],
-        level_4_6=spicy_count["4-6"],
-        level_6_8=spicy_count["6-8"],
-        level_8_10=spicy_count["8-10"]
+        level_0_20=spicy_count["0-20"],
+        level_20_40=spicy_count["20-40"],
+        level_40_60=spicy_count["40-60"],
+        level_60_80=spicy_count["60-80"],
+        level_80_100=spicy_count["80-100"]
     )
 
 
 def get_spicy_count(chats) -> dict:
     spicy_count = {
-        "0-2": 0,
-        "2-4": 0,
-        "4-6": 0,
-        "6-8": 0,
-        "8-10": 0
+        "0-20": 0,
+        "20-40": 0,
+        "40-60": 0,
+        "60-80": 0,
+        "80-100": 0
     }
     for chat in chats:
         spicy = chat.spicy
         if spicy is None:
             continue  # spicy가 None인 경우 해당 chat을 건너뜁니다.
-        if 0 <= spicy < 2:
-            spicy_count["0-2"] += 1
-        elif 2 <= spicy < 4:
-            spicy_count["2-4"] += 1
-        elif 4 <= spicy < 6:
-            spicy_count["4-6"] += 1
-        elif 6 <= spicy < 8:
-            spicy_count["6-8"] += 1
-        elif 8 <= spicy <= 10:
-            spicy_count["8-10"] += 1
+        if 0 <= spicy < 20:
+            spicy_count["0-20"] += 1
+        elif 20 <= spicy < 40:
+            spicy_count["20-40"] += 1
+        elif 40 <= spicy < 60:
+            spicy_count["40-60"] += 1
+        elif 60 <= spicy < 80:
+            spicy_count["60-80"] += 1
+        elif 80 <= spicy <= 100:
+            spicy_count["80-100"] += 1
     return spicy_count
 
 
@@ -76,7 +76,7 @@ def get_spicy_average(db: Session, character_id: int):
     if not chats:  # chats가 비어있으면 0.0을 반환합니다.
         return 0.0
     total_spicy = sum(chat.spicy if chat.spicy is not None else 0 for chat in chats)
-    return total_spicy / len(chats)
+    return round((total_spicy / len(chats)), 1) # 소수점 첫째자리까지 반올림
 
 
 # 전체 통계
