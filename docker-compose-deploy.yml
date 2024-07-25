@@ -121,6 +121,16 @@ services:
 #    networks:
 #      - teamhnet
 
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    networks:
+      - teamhnet
 
 networks:
   teamhnet:
