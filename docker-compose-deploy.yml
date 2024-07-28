@@ -130,7 +130,6 @@ services:
       - ./nginx/configs:/etc/nginx/configs
     ports:
       - "80:80"
-      - "8"
     restart: always
     networks:
       - teamhnet
