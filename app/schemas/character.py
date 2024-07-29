@@ -5,6 +5,7 @@ class CharacterDetail(BaseModel):
     id: int
     name: str
     image_url: str
+    description: str
 
     class Config:
         from_attributes = True
