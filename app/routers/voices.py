@@ -39,7 +39,7 @@ async def create_voice(bubble_id: int, db: Session = Depends(get_db)):
         print(e)
         raise HTTPException(status_code=500, detail="실패")
     voice = voice_service.create_voice(db, bubble_id=bubble_id, audio_url=audio_url)
-    return ResultResponseModel(code=200, message="목소리를 저장했습니다.", data={"audio_url": voice.audio_url})
+    return ResultResponseModel(code=200, message="목소리를 저장했습니다.", data=voice)
 
 
 # 채팅방 별 저장한 목소리 목록 조회
