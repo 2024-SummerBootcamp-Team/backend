@@ -12,7 +12,7 @@ from app.services import character_service
 
 # 저장된 모든 발췌 이미지 목록 조회
 def get_images(db: Session, skip: int = 0, limit: int = 100):
-    images = db.query(Image).filter(Image.is_deleted == False).offset(skip).limit(limit).all()
+    images = db.query(Image).filter(Image.is_deleted == False).order_by(desc(Image.created_at)).offset(skip).limit(limit).all()
     images_details = [ImageDetail(
         id=image.id,
         chat_id=image.bubble.chat_id,

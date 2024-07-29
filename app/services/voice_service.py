@@ -14,7 +14,7 @@ redis_client = Config.get_redis_client()
 
 # 저장된 모든 목소리 목록 조회
 def get_voices(db: Session, skip: int = 0, limit: int = 100):
-    voices = db.query(Voice).filter(Voice.is_deleted == False).offset(skip).limit(limit).all()
+    voices = db.query(Voice).filter(Voice.is_deleted == False).order_by(desc(Voice.created_at)).offset(skip).limit(limit).all()
     return [VoiceDetail(
         id=voice.id,
         chat_id=voice.bubble.chat_id,
@@ -106,7 +106,7 @@ def get_voice_count(db: Session, voice_id: int):
         db.refresh(voice)
 
 
-# 다운로드 횟수 기준으로 10개 출력
+# 캐릭터 별 다운로드 횟수 기준으로 10개 출력
 def get_top_voices_by_character(db: Session, character_id: int):
     return (db.query(Voice)
             .join(Voice.bubble)  # Image와 Bubble 간의 관계 조인
