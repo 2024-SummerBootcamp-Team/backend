@@ -81,7 +81,7 @@ def hard_delete_voice(voice_id: int, db: Session = Depends(get_db)):
 
 
 #목소리 다운로드 수
-@router.post("/download_count/{voice_id}", response_model=ResultResponseModel, summary="목소리 다운로드 수",
+@router.post("/downloadcount/{voice_id}", response_model=ResultResponseModel, summary="목소리 다운로드 수",
              description="목소리 다운로드 수를 알려줍니다")
 def download_voice_count(voice_id: int, db: Session = Depends(get_db)):
     voice = voice_service.get_voice(db, voice_id=voice_id)

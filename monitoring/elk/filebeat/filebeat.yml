@@ -7,4 +7,4 @@ filebeat.inputs:
 output.logstash:
   hosts: ["logstash:5044"]
 
-logging.level: error
+logging.level: info
