@@ -134,5 +134,15 @@ services:
     networks:
       - teamhnet
 
+  nginx-prometheus-exporter:
+    container_name: nginx-prometheus-exporter
+    image: nginx/nginx-prometheus-exporter:1.3
+    environment:
+      - SCRAPE_URI=http://nginx:9110/metrics
+    ports:
+      - "9113:9113"
+    networks:
+      - teamhnet
+
 networks:
   teamhnet:
