@@ -4,6 +4,9 @@ FROM python:3.10
 # 작업 디렉토리 설정
 WORKDIR /app
 
+# Timezone 설정
+ENV TZ="Asia/Seoul"
+
 # AWS CLI 설치
 RUN apt-get install -y curl unzip && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
