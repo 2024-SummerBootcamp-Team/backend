@@ -100,7 +100,7 @@ async def create_bubble(chat_id: int, content: str, db: Session):
     loop = asyncio.get_event_loop()
     gpt_task = loop.create_task(async_gpt_stream(text=content, message_queue=response_queue, chat_id=chat_id, prompt=prompt, tts_id=tts_id))
 
-    while not gpt_task.done():
+    while True:
         message = await response_queue.get()
         if message is None:
             break
