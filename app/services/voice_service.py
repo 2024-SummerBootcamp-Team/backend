@@ -89,7 +89,16 @@ def create_voice(db: Session, bubble_id: int, audio_url: str):
     db.add(voice)
     db.commit()
     db.refresh(voice)
-    return voice
+    return VoiceDetail(
+        id=voice.id,
+        chat_id=bubble.chat_id,
+        character=bubble.chat.character.name,
+        character_image=bubble.chat.character.image_url,
+        bubble_id=bubble_id,
+        audio_url=audio_url,
+        content=bubble.content,
+        created_at=voice.created_at
+    )
 
 
 # 목소리 모델 가져오기
