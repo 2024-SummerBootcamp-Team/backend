@@ -85,6 +85,9 @@ def create_voice(db: Session, bubble_id: int, audio_url: str):
     bubble = bubble_service.get_bubble(db, bubble_id=bubble_id)
     if not bubble:
         raise HTTPException(status_code=404, detail="대화를 불러오는데 실패했습니다.")
+    voice_exist = get_voice_by_bubble(db, bubble_id=bubble_id)
+    if voice_exist:
+        raise HTTPException(status_code=409, detail="이미 저장된 목소리 입니다.")
     voice = Voice(bubble_id=bubble_id, content=bubble.content, audio_url=audio_url)
     db.add(voice)
     db.commit()
@@ -101,9 +104,14 @@ def create_voice(db: Session, bubble_id: int, audio_url: str):
     )
 
 
-# 목소리 모델 가져오기
+# 목소리 가져오기
 def get_voice(db: Session, voice_id: int):
     return db.query(Voice).filter(Voice.id == voice_id, Voice.is_deleted == False).first()
+
+
+# 버블 별 목소리 가져오기
+def get_voice_by_bubble(db: Session, bubble_id: int):
+    return db.query(Voice).filter(Voice.bubble_id == bubble_id, Voice.is_deleted == False).first()
 
 
 # 목소리 카운트 증가시키기
